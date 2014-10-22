@@ -11,14 +11,13 @@ public class PlayView extends SurfaceView implements SurfaceHolder.Callback{
 	public PlayView(Context context, int width, int height) {
 		super(context);
 		getHolder().addCallback(this);
-		frameCre = new FrameCreator(width, height, getHolder());
-		new Thread(frameCre).start();
+		frameCre = new FrameCreator(width, height, getHolder());	
 	}
 
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		
+		new Thread(frameCre).start();
 		
 	}
 

@@ -14,8 +14,19 @@ public class Player {
 	public Player(Vect3 pos, Vect3 rot, World world, int radius) {
 		this.pos = pos;
 		this.rot = rot;
+		this.rot.norm();
 		this.world = world;
 		awareRadius = radius;
+	}
+	
+	public void moveForw(float dist) {
+		Vect3 temp = rot;
+		temp.mul(dist);
+		pos.add(temp);
+	}
+	
+	public void turnLeft(float degrees) {
+		rot.rotateZ(degrees);
 	}
 	
 	public Vect3 getPos() {
@@ -32,6 +43,7 @@ public class Player {
 	
 	public void setRot(Vect3 rot) {
 		this.rot = rot;
+		this.rot.norm();
 	}
 	
 	public void updateObjectList() {

@@ -1,4 +1,4 @@
-package levels;
+package game.first.levels;
 import game.first.lightlife.Player;
 import game.first.math.Vect3;
 import game.first.world.*;

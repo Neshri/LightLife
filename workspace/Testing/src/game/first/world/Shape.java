@@ -2,8 +2,8 @@ package game.first.world;
 
 import game.first.math.*;
 
-//All shapes are described in the form of one or more cubes,
-//each cube is described by 8 Vect3 positions
+//All shapes are described in the form of a
+//3D matrix of int values where 0 is solid matter and 1 is nothing
 public abstract class Shape {
 
 	public Vect3 pos;
@@ -17,9 +17,7 @@ public abstract class Shape {
 	public void moveTo(Vect3 newVect) {
 		pos = newVect;
 	}
-
-	public abstract boolean isPartOf(Vect3 checkVect);
-
+	
 	public abstract void go();
 
 }
