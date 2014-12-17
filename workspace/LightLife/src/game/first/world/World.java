@@ -8,6 +8,7 @@ public class World {
 	
 	private Shape[] staticObjects, dynamicObjects;
 	private FreeList staticFree, dynamicFree;
+	private int nbrObjects;
 	
 	
 	
@@ -18,12 +19,13 @@ public class World {
 		staticFree = new FreeList(statNbrObj, this, 0);
 		dynamicObjects = new Shape[dynNbrObj];
 		dynamicFree = new FreeList(dynNbrObj, this, 1);
-		
+		nbrObjects = 0;
 		
 	}
 	
 	public void createStatic(Shape shape) {
 		staticObjects[shape.id] = shape;
+		nbrObjects++;
 	}
 	
 	public Shape getStatic(int id) {
@@ -35,12 +37,14 @@ public class World {
 	}
 	
 	public void destroyStatic(int id) {
-		if (id > staticObjects.length || staticObjects[id] == null) {
+		if (id > staticObjects.length || staticObjects[id] == null || id < 1) {
 			return;
 		}
 		staticObjects[id] = null;
 		staticFree.storeId(id);
+		nbrObjects--;
 	}
+	
 	/**
 	 * DO NOT USE!!
 	 * FreeList uses automatically
@@ -58,6 +62,7 @@ public class World {
 	
 	public void createDynamic(Shape shape) {
 		dynamicObjects[shape.id] = shape;
+		nbrObjects++;
 	}
 	
 	public Shape getDynamic(int id) {
@@ -69,11 +74,12 @@ public class World {
 	}
 	
 	public void destroyDynamic(int id) {
-		if (id > dynamicObjects.length || dynamicObjects[id] == null) {
+		if (id > dynamicObjects.length || dynamicObjects[id] == null || id < 1) {
 			return;
 		}
 		dynamicObjects[id] = null;
 		dynamicFree.storeId(id);
+		nbrObjects--;
 	}
 	/**
 	 * DO NOT USE!!!
@@ -86,10 +92,32 @@ public class World {
 		}
 		dynamicObjects = newList;
 	}
-	// FIXA!!!!!!!!!!!!!!!
+	
 	public Shape[] getObjectsNear(Vect3 pos, int range) {
-		
-		return null;
+		Shape[] send = new Shape[nbrObjects];
+		int index = 0;
+		int rangeSquared = range * range;
+		for (Shape i : staticObjects) {
+			if (i != null) {
+				int comp = i.pos.distanceToSquared(pos);
+				if (rangeSquared > comp) {
+					send[index] = i;
+					index++;
+				}
+			}
+			
+		}
+		for (Shape i : dynamicObjects) {
+			if (i != null) {
+				int comp = i.pos.distanceToSquared(pos);
+				if (rangeSquared > comp) {
+					send[index] = i;
+					index++;
+				}
+			}
+			
+		}
+		return send;
 	}
 	
 	

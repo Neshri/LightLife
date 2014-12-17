@@ -3,5 +3,13 @@
 
     <string name="app_name">Light Life</string>
     <string name="hello_world">Hello world!</string>
+    <string name="new_game">New Game</string>
+    <string name="continue_game">Continue</string>
+    <string name="options_menu">Options</string>
+    <string name="level_selector">Levels</string>
+    <string name="back_button">Back</string>
+    <string name="resume_button">Resume</string>
+    <string name="pause_menu">Paused</string>
+    <string name="error_unkown">Unknown error</string>
 
 </resources>

@@ -20,6 +20,5 @@ public abstract class Shape {
 
 	public abstract boolean isPartOf(Vect3 checkVect);
 
-	public abstract void go();
 
 }
