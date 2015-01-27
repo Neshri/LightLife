@@ -1,5 +1,6 @@
 package game.first.lightlife;
 
+import game.first.pawn.Player;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -92,8 +93,7 @@ public class PlayActivity extends Activity {
 		size = new Point();
 		display.getSize(size);
 		player = levels.loadLevel("TestLevel");
-		view = new PlayView(this);
-		setContentView(view);
+		setPlayView();
 	}
 
 	/**
@@ -123,9 +123,7 @@ public class PlayActivity extends Activity {
 		String lastPlayed = getSharedPreferences(SAVE_DATA, 0).getString(
 				"lastPlayed", "");
 		player = levels.loadLevel(lastPlayed);
-		view = new PlayView(this);
-
-		setContentView(view);
+		setPlayView();
 	}
 
 	/**
@@ -186,10 +184,14 @@ public class PlayActivity extends Activity {
 			display = getWindowManager().getDefaultDisplay();
 			size = new Point();
 			display.getSize(size);
-			view = new PlayView(this);
-			setContentView(view);
+			setPlayView();
 		}
 
+	}
+
+	private void setPlayView() {
+		view = new PlayView(this, player, size);
+		setContentView(view);
 	}
 
 

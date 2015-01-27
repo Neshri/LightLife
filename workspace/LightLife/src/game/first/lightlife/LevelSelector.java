@@ -3,6 +3,7 @@ package game.first.lightlife;
 import java.util.HashMap;
 
 import game.first.levels.*;
+import game.first.pawn.Player;
 
 public class LevelSelector {
 
@@ -37,9 +38,8 @@ public class LevelSelector {
 		if (temp == null) {
 			return null;
 		}
-		temp.load();
 		levelRunning = level;
-		return temp.getPlayer();
+		return temp.load();
 	}
 
 }

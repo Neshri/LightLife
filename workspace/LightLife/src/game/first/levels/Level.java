@@ -1,11 +1,9 @@
 package game.first.levels;
 
-import game.first.lightlife.Player;
+import game.first.pawn.Player;
 
 public interface Level {
 	
-	public void load();
-	
-	public Player getPlayer();
+	public Player load();
 
 }

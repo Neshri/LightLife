@@ -1,3 +1,4 @@
+package game.first.props;
 //package game.first.graphics;
 //
 //import java.io.IOException;

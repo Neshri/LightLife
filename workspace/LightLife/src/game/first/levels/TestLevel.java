@@ -1,30 +1,29 @@
 package game.first.levels;
-import game.first.lightlife.Player;
+import util.InvalidFormatException;
 import game.first.math.Vect3;
+import game.first.pawn.Player;
+import game.first.props.Triangle;
 import game.first.world.*;
 public class TestLevel implements Level {
 	
-	World world;
-	FreeList stat, dyn;
-	Player player;
+	private World world;
 	
 	public TestLevel() {
 		
 	}
 
 	@Override
-	public void load() {
+	public Player load() {
 		world = new World(100, 100);
-		stat = world.getFreeStatic();
-		dyn = world.getFreeDynamic();
-		world.createStatic(new Cube(new Vect3(0, 0, 100), stat.getFreeId(), 300, 300, 300));
-		player = new Player(new Vect3(0,0,0), new Vect3(0,0,1), world, 300);
+		float[] color = {0.5f, 0.7f, 0.2f, 1f};
+		try {
+			world.createStatic(new Triangle(1f,1.118f,color,new Vect3(-1f,0f,1f)));
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+		}
+		return new Player(new Vect3(0,0,0), new Vect3(0,0,1), world);
 	}
 
-	@Override
-	public Player getPlayer() {
-		return player;
-	}
 
 
 }
