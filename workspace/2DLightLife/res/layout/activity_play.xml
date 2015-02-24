@@ -1,0 +1,40 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:screenOrientation="landscape"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <Button
+        android:id="@+id/contButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/continue_game" />
+
+    <Button
+        android:id="@+id/levelsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/contButton"
+        android:layout_centerHorizontal="true"
+        android:text="@string/level_selector" />
+
+    <Button
+        android:id="@+id/optionsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/levelsButton"
+        android:layout_centerHorizontal="true"
+        android:text="@string/options_menu" />
+
+    <Button
+        android:id="@+id/newGButton"
+        style="@style/AppTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/contButton"
+        android:layout_centerHorizontal="true"
+        android:text="@string/new_game" />
+
+</RelativeLayout>
