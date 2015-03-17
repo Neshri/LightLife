@@ -1,5 +1,7 @@
 package game.first.graphics;
 
+import game.first.lighting.LightSource;
+import game.first.lighting.PointLight;
 import game.first.pawn.Camera;
 import game.first.pawn.Player;
 import game.first.props.Shape;
@@ -12,12 +14,12 @@ import java.util.Observer;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 
 public class FrameRenderer extends GLRenderer implements Observer {
-
-	private final float[] mMVPMatrix = new float[16];
 	private final float[] mProjectionMatrix = new float[16];
 
+	private List<PointLight> pointLights;
 	private List<Shape> shapes;
 	private Camera camera;
 	private World world;
@@ -29,6 +31,7 @@ public class FrameRenderer extends GLRenderer implements Observer {
 		world = player.getWorld();
 		world.addObserver(this);
 		shapes = world.getShapes();
+		pointLights = world.getPointLights();
 	}
 
 	@Override
@@ -57,16 +60,18 @@ public class FrameRenderer extends GLRenderer implements Observer {
 	@Override
 	public void onDrawFrame(boolean firstDraw) {
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-		Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0,
-				camera.mViewMatrix, 0);
+		
 		for (Shape a : shapes) {
-			a.draw(mMVPMatrix);
+			a.draw(camera.mViewMatrix, mProjectionMatrix, pointLights);
 		}
+		//Log.d("FPS", super.getFPS() +"");
 
 	}
 
 	@Override
 	public void update(Observable observable, Object data) {
 		shapes = world.getShapes();
+		pointLights = world.getPointLights();
+		createShapes();
 	}
 }

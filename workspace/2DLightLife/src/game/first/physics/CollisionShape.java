@@ -7,14 +7,20 @@ public abstract class CollisionShape {
 	public FloatPoint[] axes;
 	public FloatPoint[] vertices;
 	public int z;
+	private FloatPoint lastTestedShortAxis;
+
+	public FloatPoint getLastMTV() {
+		return lastTestedShortAxis;
+	}
 
 	public boolean overlaps(CollisionShape shape) {
 		if (axes == null || shape.axes == null) {
 			return false;
 		}
-//		if (shape.z != z) {
-//			return false;
-//		}
+		if (shape.z != z) {
+			return false;
+		}
+		float overlap = Float.MAX_VALUE;
 		FloatPoint[] axes1 = axes;
 		FloatPoint[] axes2 = shape.axes;
 
@@ -29,6 +35,12 @@ public abstract class CollisionShape {
 			if (!p1.overlap(p2)) {
 				// then we can guarantee that the shapes do not overlap
 				return false;
+			} else {
+				float temp = p1.getOverlap(p2);
+				if (temp < overlap) {
+					lastTestedShortAxis = axis;
+					overlap = temp;
+				}
 			}
 		}
 
@@ -42,6 +54,12 @@ public abstract class CollisionShape {
 			if (!p1.overlap(p2)) {
 				// then we can guarantee that the shapes do not overlap
 				return false;
+			} else {
+				float temp = p1.getOverlap(p2);
+				if (temp < overlap) {
+					lastTestedShortAxis = axis;
+					overlap = temp;
+				}
 			}
 		}
 		return true;
@@ -63,9 +81,13 @@ public abstract class CollisionShape {
 	}
 
 	public void move(float x, float y) {
-		for (int i = 0; i < vertices.length; i++) {
+		for (int i = 0; i < 2; i++) {
+			roughBounds[i * 2] += x;
+			roughBounds[i * 2 + 1] += y;
+			vertices[i] = vertices[i].add(new FloatPoint(x, y));
+		}
+		for (int i = 2; i < vertices.length; i++) {
 			vertices[i] = vertices[i].add(new FloatPoint(x, y));
 		}
 	}
-
 }

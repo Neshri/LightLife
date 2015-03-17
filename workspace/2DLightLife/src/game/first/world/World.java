@@ -1,5 +1,8 @@
 package game.first.world;
 
+import game.first.lighting.LightSource;
+import game.first.lighting.PointLight;
+import game.first.pawn.Pawn;
 import game.first.physics.CollisionShape;
 import game.first.props.Shape;
 import game.first.world.SortedIntegerMap.Node;
@@ -8,6 +11,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
+
+import android.util.Log;
 
 public class World extends Observable {
 
@@ -18,8 +23,11 @@ public class World extends Observable {
 	@SuppressWarnings("unused")
 	private int nbrObjects;
 	private SortedIntegerMap orderOfDraw;
+	private LinkedList<PointLight> pointLights;
+	private LinkedList<Pawn> pawns;
 
 	public World(int statNbrObj, int dynNbrObj) {
+		pawns = new LinkedList<Pawn>();
 		staticObjects = new Shape[statNbrObj];
 		staticFree = new FreeList(statNbrObj, this, 0);
 		dynamicObjects = new Shape[dynNbrObj];
@@ -27,7 +35,35 @@ public class World extends Observable {
 		nbrObjects = 0;
 		staticNearList = new PointNearList();
 		orderOfDraw = new SortedIntegerMap();
+		pointLights = new LinkedList<PointLight>();
 
+	}
+	
+	public void addPawn(Pawn pawn) {
+		pawns.add(pawn);
+	}
+	
+	public void removePawn(Pawn pawn) {
+		pawns.remove(pawn);
+	}
+
+	public void addPointLight(PointLight light) {
+		pointLights.add(light);
+		notifyObs();
+	}
+
+	public void removePointLight(PointLight light) {
+		pointLights.remove(light);
+		notifyObs();
+	}
+
+	public List<PointLight> getPointLights() {
+		LinkedList<PointLight> send = new LinkedList<PointLight>();
+		Iterator<PointLight> iter = pointLights.iterator();
+		while (iter.hasNext()) {
+			send.add(iter.next());
+		}
+		return send;
 	}
 
 	private void notifyObs() {
@@ -42,11 +78,19 @@ public class World extends Observable {
 		while (iter.hasNext()) {
 			send.add(iter.next().collisionShape);
 		}
+		for (int i = 0; i < dynamicObjects.length; i++) {
+			if (dynamicObjects[i] != null) {
+				send.add(dynamicObjects[i].collisionShape);
+			}
+		}
+		// Log.d("Collision", "" + send.size());
 		return send;
 	}
 
 	public void step() {
-		// if objects are moving
+		for (Pawn i : pawns) {
+			i.step();
+		}
 	}
 
 	public void createStatic(Shape shape) {

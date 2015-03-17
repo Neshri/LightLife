@@ -9,28 +9,28 @@ public class PointNearList {
 	private Node root;
 
 	public PointNearList() {
-		//Defines size of the map
+		// Defines size of the map
 		float[] firstBound = new float[4];
-		firstBound[0] = -200f;
-		firstBound[1] = -200f;
-		firstBound[2] = 200f;
-		firstBound[3] = 200f;
+		firstBound[0] = -500f;
+		firstBound[1] = -500f;
+		firstBound[2] = 500f;
+		firstBound[3] = 500f;
 
 		root = new Node(0, firstBound);
 	}
-	
+
 	public void insert(Shape shape) {
 		root.insert(shape);
 	}
-	
+
 	public void clear() {
 		root.clear();
 	}
-	
+
 	public void delete(Shape shape) {
 		root.delete(shape);
 	}
-	
+
 	public List<Shape> retrieve(List<Shape> returnObjects, float[] bounds) {
 		return root.retrieve(returnObjects, bounds);
 	}
@@ -38,18 +38,23 @@ public class PointNearList {
 	private class Node {
 
 		private static final int MAX_OBJECTS = 10;
-		private static final int MAX_LEVELS = 25;
+		private static final int MAX_LEVELS = 40;
 
 		private Node[] nodes;
 		private int level;
 		private List<Shape> objects;
 		private float[] bounds;
+		private double verticalMidPoint, horizontalMidPoint;
 
 		public Node(int level, float[] bounds) {
 			this.level = level;
 			nodes = new Node[4];
 			objects = new ArrayList<Shape>();
 			this.bounds = bounds;
+			verticalMidPoint = this.bounds[1]
+					+ (this.bounds[3] - this.bounds[1]) / 2;
+			horizontalMidPoint = this.bounds[0]
+					+ (this.bounds[2] - this.bounds[0]) / 2;
 		}
 
 		public void clear() {
@@ -62,7 +67,7 @@ public class PointNearList {
 				}
 			}
 		}
-		
+
 		public void delete(Shape shape) {
 			if (nodes[0] != null) {
 				int index = getIndex(shape.getRoughBounds());
@@ -111,21 +116,17 @@ public class PointNearList {
 
 		private int getIndex(float[] bounds) {
 			int index = -1;
-			double verticalMidPoint = this.bounds[1]
-					+ (this.bounds[3] - this.bounds[1]) / 2;
-			double horizontalMidPoint = this.bounds[0]
-					+ (this.bounds[2] - this.bounds[0]) / 2;
 
-			boolean bottomQuadrant = bounds[3] > verticalMidPoint;
-			boolean topQuadrant = bounds[1] > verticalMidPoint;
+			boolean bottomQuadrant = bounds[3] < horizontalMidPoint;
+			boolean topQuadrant = bounds[1] > horizontalMidPoint;
 
-			if (bounds[2] < horizontalMidPoint) {
+			if (bounds[2] < verticalMidPoint) {
 				if (topQuadrant) {
 					index = 1;
 				} else if (bottomQuadrant) {
 					index = 2;
 				}
-			} else if (bounds[0] > horizontalMidPoint) {
+			} else if (bounds[0] > verticalMidPoint) {
 				if (topQuadrant) {
 					index = 0;
 				} else if (bottomQuadrant) {
@@ -158,26 +159,27 @@ public class PointNearList {
 					int index = getIndex(objects.get(i).getRoughBounds());
 					if (index != -1) {
 						nodes[index].insert(objects.remove(i));
-					} else {
-						i++;
 					}
+					i++;
 				}
 			}
 		}
-		
+
+
 		/*
 		 * Return all objects that could collide with the given object
 		 */
-		 public List<Shape> retrieve(List<Shape> returnObjects, float[] bounds) {
-		   int index = getIndex(bounds);
-		   if (index != -1 && nodes[0] != null) {
-		     nodes[index].retrieve(returnObjects, bounds);
-		     
-		   }
-		 
-		   returnObjects.addAll(objects);
-		 
-		   return returnObjects;
-		 }
+		public List<Shape> retrieve(List<Shape> returnObjects, float[] bounds) {
+			int index = getIndex(bounds);
+			if (nodes[0] != null) {
+				if (index != -1) {
+					nodes[index].retrieve(returnObjects, bounds);
+				}
+			}
+
+			returnObjects.addAll(objects);
+
+			return returnObjects;
+		}
 	}
 }
