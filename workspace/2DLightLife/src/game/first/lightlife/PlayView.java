@@ -134,6 +134,12 @@ public class PlayView extends GLSurfaceView implements ErrorHandler {
 		looper.onPause();
 		super.onPause();
 	}
+	
+	@Override
+	public void onResume() {
+		looper.onResume();
+		super.onResume();
+	}
 
 	// Hides superclass method.
 	public void setRenderer(FrameRenderer renderer, float density) {

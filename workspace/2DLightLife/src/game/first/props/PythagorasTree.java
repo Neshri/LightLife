@@ -21,7 +21,7 @@ public class PythagorasTree extends Shape {
 
 	public PythagorasTree(float x, float y, float z, float[] color, float size,
 			int iterations, int rotationDegree) {
-		super(x, y, z, color);
+		super(x, y, z, color, false);
 		if (iterations > 10) {
 			iterations = 10;
 		}

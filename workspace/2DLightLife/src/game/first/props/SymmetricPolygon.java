@@ -32,9 +32,9 @@ public class SymmetricPolygon extends Shape {
 	 *            if true the shape will calculate possible collisions
 	 */
 	public SymmetricPolygon(int corners, float maxRadius, float[] color,
-			float x, float y, float z, boolean collision)
+			float x, float y, float z, boolean collision, boolean destructible)
 			throws InvalidFormatException {
-		super(x, y, z, color);
+		super(x, y, z, color, destructible);
 		if (corners < 3) {
 			throw new InvalidFormatException(
 					"Need at least 3 corners in a polygon");

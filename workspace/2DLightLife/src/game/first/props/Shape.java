@@ -74,15 +74,34 @@ public abstract class Shape {
 	private int mMVPMatrixHandle, mMMatrixHandle, colorHandle;
 	private float[] color = new float[4];
 	protected String vertexShaderCode, fragmentShaderCode;
+	private boolean destructible;
 
-	public Shape(float x, float y, float z, float[] color) {
+	public Shape(float x, float y, float z, float[] color, boolean destructible) {
 		position[0] = x;
 		position[1] = y;
 		position[2] = z;
+		this.destructible = destructible;
 		for (int i = 0; i < 4; i++) {
 			this.color[i] = color[i];
 		}
 		Matrix.setIdentityM(modelMatrix, 0);
+	}
+	
+	public void setAlpha(float alpha) {
+		if (alpha < 0) {
+			alpha = 0;
+		} else if (alpha > 1.0f) {
+			alpha = 1.0f;
+		}
+		color[3] = alpha;
+	}
+	
+	public float getAlpha() {
+		return color[3];
+	}
+	
+	public boolean isDestructible() {
+		return destructible;
 	}
 
 	public void addCollision(CollisionShape collisionShape) {

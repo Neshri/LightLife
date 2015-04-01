@@ -37,4 +37,13 @@
         android:layout_centerHorizontal="true"
         android:text="@string/new_game" />
 
+    <TextView
+        android:id="@+id/musicComposer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/optionsButton"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:text="@string/composer" />
+
 </RelativeLayout>

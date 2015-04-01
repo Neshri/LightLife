@@ -1,6 +1,7 @@
 package game.first.world;
 
 import game.first.lighting.LightSource;
+import game.first.lighting.LineLight;
 import game.first.lighting.PointLight;
 import game.first.pawn.Pawn;
 import game.first.physics.CollisionShape;
@@ -24,6 +25,7 @@ public class World extends Observable {
 	private int nbrObjects;
 	private SortedIntegerMap orderOfDraw;
 	private LinkedList<PointLight> pointLights;
+	private LinkedList<LineLight> lineLights;
 	private LinkedList<Pawn> pawns;
 
 	public World(int statNbrObj, int dynNbrObj) {
@@ -36,6 +38,7 @@ public class World extends Observable {
 		staticNearList = new PointNearList();
 		orderOfDraw = new SortedIntegerMap();
 		pointLights = new LinkedList<PointLight>();
+		lineLights = new LinkedList<LineLight>();
 
 	}
 	
@@ -55,6 +58,25 @@ public class World extends Observable {
 	public void removePointLight(PointLight light) {
 		pointLights.remove(light);
 		notifyObs();
+	}
+	
+	public void addLineLight(LineLight light) {
+		lineLights.add(light);
+		notifyObs();
+	}
+	
+	public void removeLineLight(LineLight light) {
+		lineLights.remove(light);
+		notifyObs();
+	}
+	
+	public List<LineLight> getLineLights() {
+		LinkedList<LineLight> send = new LinkedList<LineLight>();
+		Iterator<LineLight> iter = lineLights.iterator();
+		while (iter.hasNext()) {
+			send.add(iter.next());
+		}
+		return send;
 	}
 
 	public List<PointLight> getPointLights() {
@@ -78,11 +100,11 @@ public class World extends Observable {
 		while (iter.hasNext()) {
 			send.add(iter.next().collisionShape);
 		}
-		for (int i = 0; i < dynamicObjects.length; i++) {
-			if (dynamicObjects[i] != null) {
-				send.add(dynamicObjects[i].collisionShape);
-			}
-		}
+//		for (int i = 0; i < dynamicObjects.length; i++) {
+//			if (dynamicObjects[i] != null) {
+//				send.add(dynamicObjects[i].collisionShape);
+//			}
+//		}
 		// Log.d("Collision", "" + send.size());
 		return send;
 	}

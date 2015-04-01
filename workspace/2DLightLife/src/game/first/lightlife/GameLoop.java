@@ -7,6 +7,7 @@ import game.first.world.World;
 public class GameLoop extends Thread {
 	
 	private volatile boolean shouldPause;
+	private volatile Object lock = new Object();
 	private PlayView view;
 	private World world;
 	private Controller control;
@@ -23,11 +24,18 @@ public class GameLoop extends Thread {
 		shouldPause = true;
 	}
 	
+	public void onResume() {
+		shouldPause = false;
+		synchronized (lock) {
+			lock.notify();
+		}
+	}
+	
 	
 	
 	@Override
 	public void run() {
-		while(!shouldPause) {
+		while(true) {
 			world.step();
 			controlVals = view.controlVals;
 			control.update(controlVals[0], controlVals[1], controlVals[2], controlVals[3]);
@@ -36,6 +44,16 @@ public class GameLoop extends Thread {
 				sleep(10);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+			}
+			
+			if (shouldPause) {
+				synchronized (lock) {
+					try {
+						lock.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}

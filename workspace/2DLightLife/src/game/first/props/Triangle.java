@@ -12,8 +12,8 @@ import android.opengl.Matrix;
 public class Triangle extends Shape {
 
 	public Triangle(float base, float height, float color[], float x, float y,
-			float z, boolean collision) throws InvalidFormatException {
-		super(x, y, z, color);
+			float z, boolean collision, boolean destructible) {
+		super(x, y, z, color, destructible);
 		float[] points = createVertices(base, height);
 		if (collision) {
 			float[] collisionPoints = new float[6];

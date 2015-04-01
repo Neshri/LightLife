@@ -3,6 +3,8 @@ package game.first.pawn;
 import game.first.lighting.LightSource;
 import game.first.lighting.PointLight;
 import game.first.math.FloatPoint;
+import game.first.mechanics.LightPulse;
+import game.first.props.Rectangle;
 import game.first.props.Shape;
 import game.first.props.SymmetricPolygon;
 import game.first.world.World;
@@ -14,6 +16,7 @@ public class Follower implements Pawn {
 	private FloatPoint vDirection;
 	private Shape model;
 	private PointLight lightAura;
+	private LightPulse lightBreath;
 	private Pawn target;
 	private World world;
 	private float speed;
@@ -26,22 +29,27 @@ public class Follower implements Pawn {
 		world.addPawn(this);
 		vDirection = new FloatPoint(0, 0);
 		float[] color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		// Creates the Player model
 		try {
-			// Creates the Player model
-			model = new SymmetricPolygon(5, 0.03f, color, x, y, 2, true);
-			// playerModel.setShaders(vertexShaderCode, fragmentShaderCode);
+			model = new SymmetricPolygon(5, 0.03f, color, x, y, 2, true, false);
 			world.createDynamic(model);
-			
-			lightAura = new PointLight(x, y, 2f, color, 0.3f);
-			//world.addPointLight(lightAura);
 		} catch (InvalidFormatException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//model = new Rectangle(0.06f, 0.06f, color, x, y, 2, true);
+		// playerModel.setShaders(vertexShaderCode, fragmentShaderCode);
+		
+		
+		lightAura = new PointLight(x, y, 2f, color, 0.3f);
+		world.addPointLight(lightAura);
+		lightBreath = new LightPulse(lightAura, 0.05f, 1);
 		
 	}
 
 	@Override
 	public void step() {
+		lightBreath.update();
 		FloatPoint targetPos = target.getPosition();
 		targetPos = targetPos.sub(vPosition);
 		float length = targetPos.getLength();

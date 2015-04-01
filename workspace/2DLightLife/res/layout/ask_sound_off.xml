@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:screenOrientation="landscape" >
+
+    <Button
+        android:id="@+id/sound_yes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/ask_for_sound"
+        android:layout_below="@+id/ask_for_sound"
+        android:layout_marginTop="27dp"
+        android:text="@string/yes" />
+
+    <Button
+        android:id="@+id/sound_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/sound_yes"
+        android:layout_alignBottom="@+id/sound_yes"
+        android:layout_alignLeft="@+id/ask_for_sound"
+        android:text="@string/no" />
+
+    <TextView
+        android:id="@+id/reminder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/sound_no"
+        android:layout_below="@+id/sound_yes"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:text="@string/tip_for_sound" />
+
+    <TextView
+        android:id="@+id/ask_for_sound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="41dp"
+        android:ems="10"
+        android:text="@string/ask_for_sound" />
+
+</RelativeLayout>

@@ -17,11 +17,11 @@ public abstract class Level {
 
 	protected List<Shape> createStandardBoundingBox(float width, float height) {
 		LinkedList<Shape> send = new LinkedList<Shape>();
-		send.add(new Rectangle(width, height, grey, -width / 2, -height / 2, 3, false));
-		send.add(new Rectangle(width, 2, black, -width / 2, -height / 2-1, 2, true));
-		send.add(new Rectangle(width, 2, black, -width / 2, height / 2-1, 2, true));
-		send.add(new Rectangle(2, height, black, -width / 2-1, -height / 2, 2, true));
-		send.add(new Rectangle(2, height, black, width / 2-1, -height / 2, 2, true));
+		send.add(new Rectangle(width, height, grey, -width / 2, -height / 2, 3, false, false));
+		send.add(new Rectangle(width, 2, black, -width / 2, -height / 2-1, 2, true, false));
+		send.add(new Rectangle(width, 2, black, -width / 2, height / 2-1, 2, true, false));
+		send.add(new Rectangle(2, height, black, -width / 2-1, -height / 2, 2, true, false));
+		send.add(new Rectangle(2, height, black, width / 2-1, -height / 2, 2, true, false));
 		return send;
 	}
 

@@ -3,6 +3,7 @@ package game.first.pawn;
 import game.first.lighting.LightSource;
 import game.first.lighting.PointLight;
 import game.first.math.FloatPoint;
+import game.first.mechanics.LightPulse;
 import game.first.props.Rectangle;
 import game.first.props.Shape;
 import game.first.props.SymmetricPolygon;
@@ -39,12 +40,11 @@ public class Player extends Observable implements Pawn {
 	private Camera camera;
 	private Shape playerModel;
 	private PointLight lightAura;
-	private float lightGlow, glowAdd;
+	private LightPulse lightBreath;
+
 
 	public Player(float x, float y, World world) {
 		this.world = world;
-		lightGlow = 0.5f;
-		glowAdd = 0.001f;
 		camera = new Camera(x, y, 0f);
 		addObserver(camera);
 		vPosition[0] = x;
@@ -55,12 +55,13 @@ public class Player extends Observable implements Pawn {
 		float[] color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		try {
 			// Creates the Player model
-			playerModel = new SymmetricPolygon(8, 0.1f, color, x, y, 2, true);
+			playerModel = new SymmetricPolygon(8, 0.1f, color, x, y, 2, true, false);
 			//playerModel.setShaders(vertexShaderCode, fragmentShaderCode);
 			world.createDynamic(playerModel);
 			
-			lightAura = new PointLight(x, y, 2f, color, lightGlow);
+			lightAura = new PointLight(x, y, 2f, color, 0.6f);
 			world.addPointLight(lightAura);
+			lightBreath = new LightPulse(lightAura, 0.1f, 1);
 		} catch (InvalidFormatException e) {
 
 			e.printStackTrace();
@@ -78,6 +79,7 @@ public class Player extends Observable implements Pawn {
 		if (vDirection[1] > SPEEDCAP) {
 			vDirection[1] = SPEEDCAP;
 		}
+		lightBreath.update();
 		playerModel.updateCollisionShapeList(world);
 		FloatPoint normalVector = playerModel.moveGetMTV(vDirection[0],
 				vDirection[1]);
@@ -105,13 +107,6 @@ public class Player extends Observable implements Pawn {
 		vDirection[0] = vDirection[0] / SLOWDOWNSPEED;
 		vDirection[1] = vDirection[1] / SLOWDOWNSPEED;
 		lightAura.setPos(vPosition[0], vPosition[1], 2f);
-		if (lightGlow > 0.7f) {
-			glowAdd = -0.001f;
-		} else if (lightGlow < 0.5f) {
-			glowAdd = 0.001f;
-		}
-		lightGlow += glowAdd;
-		lightAura.setStrength(lightGlow);
 		setChanged();
 		notifyObservers();
 	}

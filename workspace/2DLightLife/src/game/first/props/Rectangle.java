@@ -21,8 +21,8 @@ public class Rectangle extends Shape {
 	private short drawOrder[] = { 1, 2, 0, 0, 2, 3 };
 
 	public Rectangle(float width, float height, float[] color, float x,
-			float y, float z, boolean collision) {
-		super(x, y, z, color);
+			float y, float z, boolean collision, boolean destructible) {
+		super(x, y, z, color, destructible);
 		float[] points = createVertices(width, height);
 		super.installVertices(points);
 		if (collision) {
