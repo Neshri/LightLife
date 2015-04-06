@@ -168,7 +168,8 @@ public class PythagorasTree extends Shape {
 	}
 
 	@Override
-	public void draw(float[] vMatrix, float[] pMatrix, List<PointLight> pointLights) {
+	public void draw(float[] vMatrix, float[] pMatrix,
+			List<PointLight> pointLights) {
 		super.draw(vMatrix, pMatrix, pointLights);
 
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrderLength,

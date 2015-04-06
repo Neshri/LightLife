@@ -1,21 +1,26 @@
 package game.first.world;
 
-import game.first.lighting.LightSource;
-import game.first.lighting.LineLight;
 import game.first.lighting.PointLight;
 import game.first.pawn.Pawn;
 import game.first.physics.CollisionShape;
 import game.first.props.Shape;
 import game.first.world.SortedIntegerMap.Node;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import android.util.Log;
 
 public class World extends Observable {
+	
+	public final static int POINT_LIGHT = 1;
+	public final static int DYNAMIC_SHAPES = 2;
+	public final static int STATIC_SHAPES = 3;
+	public final static int MAX_POINT_LIGHTS = 10;
 
 	private static final int INCREASE_MULTIPLIER = 2;
 	private Shape[] staticObjects, dynamicObjects;
@@ -25,7 +30,6 @@ public class World extends Observable {
 	private int nbrObjects;
 	private SortedIntegerMap orderOfDraw;
 	private LinkedList<PointLight> pointLights;
-	private LinkedList<LineLight> lineLights;
 	private LinkedList<Pawn> pawns;
 
 	public World(int statNbrObj, int dynNbrObj) {
@@ -38,7 +42,6 @@ public class World extends Observable {
 		staticNearList = new PointNearList();
 		orderOfDraw = new SortedIntegerMap();
 		pointLights = new LinkedList<PointLight>();
-		lineLights = new LinkedList<LineLight>();
 
 	}
 	
@@ -51,36 +54,22 @@ public class World extends Observable {
 	}
 
 	public void addPointLight(PointLight light) {
+		if (pointLights.size() >= 10) {
+			return;
+		}
 		pointLights.add(light);
-		notifyObs();
+		notifyObs(POINT_LIGHT);
 	}
 
 	public void removePointLight(PointLight light) {
-		pointLights.remove(light);
-		notifyObs();
+		Log.d("Graphics", "" + pointLights.remove(light));
+		//pointLights.remove(light);
+		notifyObs(POINT_LIGHT);
 	}
 	
-	public void addLineLight(LineLight light) {
-		lineLights.add(light);
-		notifyObs();
-	}
-	
-	public void removeLineLight(LineLight light) {
-		lineLights.remove(light);
-		notifyObs();
-	}
-	
-	public List<LineLight> getLineLights() {
-		LinkedList<LineLight> send = new LinkedList<LineLight>();
-		Iterator<LineLight> iter = lineLights.iterator();
-		while (iter.hasNext()) {
-			send.add(iter.next());
-		}
-		return send;
-	}
 
 	public List<PointLight> getPointLights() {
-		LinkedList<PointLight> send = new LinkedList<PointLight>();
+		ArrayList<PointLight> send = new ArrayList<PointLight>(pointLights.size());
 		Iterator<PointLight> iter = pointLights.iterator();
 		while (iter.hasNext()) {
 			send.add(iter.next());
@@ -88,11 +77,16 @@ public class World extends Observable {
 		return send;
 	}
 
-	private void notifyObs() {
+	private void notifyObs(int type) {
 		super.setChanged();
-		super.notifyObservers();
+		super.notifyObservers(type);
 	}
 
+	public List<Shape> getNearShapes(float[] bounds) {
+		LinkedList<Shape> send = new LinkedList<Shape>();
+		return staticNearList.retrieve(send, bounds);
+	}
+	
 	public List<CollisionShape> getNearCollision(float[] bounds) {
 		LinkedList<CollisionShape> send = new LinkedList<CollisionShape>();
 		Iterator<Shape> iter = staticNearList.retrieve(new LinkedList<Shape>(),
@@ -110,8 +104,12 @@ public class World extends Observable {
 	}
 
 	public void step() {
+		LinkedList<Pawn> temp = new LinkedList<Pawn>();
 		for (Pawn i : pawns) {
-			i.step();
+			temp.add(i);
+		}
+		for (Pawn i : temp) {
+			i.step(this);
 		}
 	}
 
@@ -123,7 +121,7 @@ public class World extends Observable {
 		}
 		orderOfDraw.add(shape.id, (int) shape.position[2], 'S');
 		nbrObjects++;
-		notifyObs();
+		notifyObs(STATIC_SHAPES);
 	}
 
 	public Shape getStatic(int id) {
@@ -144,7 +142,7 @@ public class World extends Observable {
 		staticObjects[id] = null;
 		staticFree.storeId(id);
 		nbrObjects--;
-		notifyObs();
+		notifyObs(STATIC_SHAPES);
 	}
 
 	private void increaseStatic() {
@@ -160,7 +158,7 @@ public class World extends Observable {
 		dynamicObjects[shape.id] = shape;
 		orderOfDraw.add(shape.id, (int) shape.position[2], 'D');
 		nbrObjects++;
-		notifyObs();
+		notifyObs(DYNAMIC_SHAPES);
 	}
 
 	public Shape getDynamic(int id) {
@@ -175,7 +173,7 @@ public class World extends Observable {
 		dynamicObjects[id] = null;
 		dynamicFree.storeId(id);
 		nbrObjects--;
-		notifyObs();
+		notifyObs(DYNAMIC_SHAPES);
 	}
 
 	private void increaseDynamic() {
@@ -185,14 +183,23 @@ public class World extends Observable {
 		}
 		dynamicObjects = newList;
 	}
-
-	public List<Shape> getShapes() {
+	
+	public List<Shape> getStaticShapes() {
 		LinkedList<Shape> shapes = new LinkedList<Shape>();
 		List<Node> order = orderOfDraw.getSorted();
 		for (Node i : order) {
 			if (i.getType() == 'S') {
 				shapes.add(staticObjects[i.getId()]);
-			} else {
+			}
+		}
+		return shapes;
+	}
+
+	public List<Shape> getDynamicShapes() {
+		LinkedList<Shape> shapes = new LinkedList<Shape>();
+		List<Node> order = orderOfDraw.getSorted();
+		for (Node i : order) {
+			if (i.getType() == 'D') {
 				shapes.add(dynamicObjects[i.getId()]);
 			}
 		}

@@ -84,6 +84,8 @@ public class PlayView extends GLSurfaceView implements ErrorHandler {
 			return super.onTouchEvent(event);
 		}
 	}
+	
+	
 
 	private void calculatePointers(MotionEvent event) {
 		if (event.getPointerCount() > 1) {

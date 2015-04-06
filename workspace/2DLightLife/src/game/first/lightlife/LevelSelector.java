@@ -15,6 +15,10 @@ public class LevelSelector {
 		levels.put("TestLevel", new TestLevel());
 
 	}
+	
+	public Level getLevel(String level) {
+		return levels.get(level);
+	}
 
 	/**
 	 * Returns the level currently being played or the last level played since

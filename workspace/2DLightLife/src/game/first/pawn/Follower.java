@@ -18,17 +18,15 @@ public class Follower implements Pawn {
 	private PointLight lightAura;
 	private LightPulse lightBreath;
 	private Pawn target;
-	private World world;
 	private float speed;
 
 	public Follower(float x, float y, Pawn target, World world) {
 		vPosition = new FloatPoint(x, y);
 		speed = 0;
 		this.target = target;
-		this.world = world;
 		world.addPawn(this);
 		vDirection = new FloatPoint(0, 0);
-		float[] color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float[] color = { 0.4f, 1.0f, 0.4f, 1.0f };
 		// Creates the Player model
 		try {
 			model = new SymmetricPolygon(5, 0.03f, color, x, y, 2, true, false);
@@ -48,7 +46,7 @@ public class Follower implements Pawn {
 	}
 
 	@Override
-	public void step() {
+	public void step(World world) {
 		lightBreath.update();
 		FloatPoint targetPos = target.getPosition();
 		targetPos = targetPos.sub(vPosition);

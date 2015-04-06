@@ -29,6 +29,7 @@ public class PlayActivity extends Activity {
 	private Boolean withMusic, withSound, inMainMenu;
 	private OnClickListener backButtonAction;
 	private float musicVolume, soundVolume;
+	private int currentlyPlayingSong;
 
 	/**
 	 * Called when the activity is starting
@@ -94,7 +95,7 @@ public class PlayActivity extends Activity {
 	public void mainMenu() {
 		setContentView(R.layout.activity_play);
 		if (withMusic) {
-			createAndPlayMainMusic();
+			createAndPlayMusic(R.raw.and_the_faded_notes_play);
 		}
 		inMainMenu = true;
 
@@ -142,13 +143,21 @@ public class PlayActivity extends Activity {
 		});
 	}
 
-	private void createAndPlayMainMusic() {
-		if (musicPlayer == null) {
-			musicPlayer = MediaPlayer.create(this, R.raw.and_the_faded_notes_play);
+	private void createAndPlayMusic(int musicId) {
+		if (musicId == currentlyPlayingSong) {
+			if (musicPlayer != null) {
+				musicPlayer.start();
+			}
+			return;
 		}
+		if (musicPlayer != null) {
+			musicPlayer.stop();
+		}
+		musicPlayer = MediaPlayer.create(this, musicId);
 		musicPlayer.setVolume(musicVolume, musicVolume);
 		musicPlayer.setLooping(true);
 		musicPlayer.start();
+		currentlyPlayingSong = musicId;
 	}
 
 	/**
@@ -207,7 +216,7 @@ public class PlayActivity extends Activity {
 							musicVolume = (float) progress
 									/ (float) seekBar.getMax();
 							withMusic = true;
-							createAndPlayMainMusic();
+							createAndPlayMusic(R.raw.and_the_faded_notes_play);
 						}
 						if (progress == 0) {
 							musicPlayer.pause();
@@ -346,6 +355,7 @@ public class PlayActivity extends Activity {
 			}
 		};
 		view = new PlayView(this, player, size);
+		//createAndPlayMusic(levels.getLevel(levels.getLastPlayed()).getMusicId());
 		setContentView(view);
 	}
 

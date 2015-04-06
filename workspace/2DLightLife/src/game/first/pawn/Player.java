@@ -3,6 +3,7 @@ package game.first.pawn;
 import game.first.lighting.LightSource;
 import game.first.lighting.PointLight;
 import game.first.math.FloatPoint;
+import game.first.mechanics.DestructionLight;
 import game.first.mechanics.LightPulse;
 import game.first.props.Rectangle;
 import game.first.props.Shape;
@@ -31,7 +32,7 @@ public class Player extends Observable implements Pawn {
 			+ "  gl_FragColor = vColor;" + "}";
 
 	private final static float SLOWDOWNSPEED = 1.1f;
-	private final static float SPEEDCAP = 0.4f;
+	private final static float SPEEDCAP = 0.5f;
 
 	private final float[] vDirection = new float[2];
 	private final float[] vPosition = new float[2];
@@ -41,6 +42,7 @@ public class Player extends Observable implements Pawn {
 	private Shape playerModel;
 	private PointLight lightAura;
 	private LightPulse lightBreath;
+	private DestructionLight gun;
 
 
 	public Player(float x, float y, World world) {
@@ -67,17 +69,27 @@ public class Player extends Observable implements Pawn {
 			e.printStackTrace();
 		}
 		new Follower(x, y-1, this, world);
+		gun = new DestructionLight(world);
 		control = new Controller(this);
 	}
 
 	public void move(float x, float y) {
+		FloatPoint maxCalc = new FloatPoint(x, y);
+		if (maxCalc.getLength() > 1.0f) {
+			maxCalc.normalize();
+			x = maxCalc.getX();
+			y = maxCalc.getY();
+		}
+		
+		
 		vDirection[0] = vDirection[0] + x / 500f;
 		vDirection[1] = vDirection[1] + y / 500f;
-		if (vDirection[0] > SPEEDCAP) {
-			vDirection[0] = SPEEDCAP;
-		}
-		if (vDirection[1] > SPEEDCAP) {
-			vDirection[1] = SPEEDCAP;
+		maxCalc = new FloatPoint(vDirection[0], vDirection[1]);
+		if (maxCalc.getLength() > SPEEDCAP) {
+			maxCalc.normalize();
+			maxCalc = maxCalc.mult(SPEEDCAP);
+			vDirection[0] = maxCalc.getX();
+			vDirection[1] = maxCalc.getY();
 		}
 		lightBreath.update();
 		playerModel.updateCollisionShapeList(world);
@@ -111,6 +123,11 @@ public class Player extends Observable implements Pawn {
 		notifyObservers();
 	}
 
+	
+	public void shoot(float x, float y) {
+		gun.shoot(new FloatPoint(x, y), new FloatPoint(vPosition[0], vPosition[1]));
+	}
+	
 	public Camera getCamera() {
 		return camera;
 	}
@@ -145,7 +162,7 @@ public class Player extends Observable implements Pawn {
 	}
 
 	@Override
-	public void step() {
+	public void step(World world) {
 		// does nothing
 		
 	}

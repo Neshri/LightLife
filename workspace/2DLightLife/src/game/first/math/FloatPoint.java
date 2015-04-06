@@ -62,6 +62,10 @@ public class FloatPoint {
 	public FloatPoint mult(float multiplier) {
 		return new FloatPoint(x * multiplier, y * multiplier);
 	}
+	
+	public FloatPoint div(float divisor) {
+		return new FloatPoint(x / divisor, y / divisor);
+	}
 
 	public FloatPoint sub(FloatPoint other) {
 		return new FloatPoint(x - other.getX(), y - other.getY());

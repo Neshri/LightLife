@@ -3,6 +3,7 @@ package game.first.levels;
 import java.util.List;
 
 import game.first.lighting.PointLight;
+import game.first.lightlife.R;
 import game.first.pawn.Player;
 import game.first.props.PythagorasTree;
 import game.first.props.Rectangle;
@@ -15,6 +16,12 @@ import util.InvalidFormatException;
 public class TestLevel extends Level {
 
 	private World world;
+	
+	private static final String levelName = "Test Level";
+	private static final int music = R.raw.escape_route;
+		
+	
+	
 
 	@Override
 	public Player load() {
@@ -31,7 +38,10 @@ public class TestLevel extends Level {
 			world.createStatic(new PythagorasTree(-9, -3, 3, black, 2, 10, 30));
 			world.createStatic(new PythagorasTree(-12, -3, 3, green, 2, 10, 60));
 			world.createStatic(new PythagorasTree(-15, -3, 3, green, 2, 10, 10));
-			world.createStatic(new Rectangle(15, 2, black, -15, -5, 2, true, true));
+			world.createStatic(new Rectangle(15, 2, black, -15, -5, 2, true, false));
+			float[] p1 = {-2f, 0f, 2.5f};
+			float[] p2 = {2f, 0f, 2f};
+			
 			//world.addLight(new PointLight(-3,-1,2,5f));
 			List<Shape> box = createStandardBoundingBox(35, 35);
 			for (Shape i : box) {
@@ -44,5 +54,13 @@ public class TestLevel extends Level {
 		}
 
 		return new Player(0, 0, world);
+	}
+
+
+
+
+	@Override
+	public int getMusicId() {
+		return music;
 	}
 }

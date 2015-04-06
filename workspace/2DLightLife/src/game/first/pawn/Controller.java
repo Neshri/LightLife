@@ -15,7 +15,7 @@ public class Controller {
 
 	public void update(float leftX, float leftY, float rightX, float rightY) {
 		player.move(leftX, leftY);
-		
+		player.shoot(rightX, rightY);
 	}
 
 }

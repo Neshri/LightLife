@@ -88,11 +88,12 @@ public class SymmetricPolygon extends Shape {
 	}
 
 	@Override
-	public void draw(float[] vMatrix, float[] pMatrix, List<PointLight> pointLights) {
-//		if (vertexShaderCode != null || fragmentShaderCode != null) {
-//			drawSimple(vMatrix, pMatrix);
-//			return;
-//		}
+	public void draw(float[] vMatrix, float[] pMatrix,
+			List<PointLight> pointLights) {
+		// if (vertexShaderCode != null || fragmentShaderCode != null) {
+		// drawSimple(vMatrix, pMatrix);
+		// return;
+		// }
 		super.draw(vMatrix, pMatrix, pointLights);
 
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length,
@@ -103,42 +104,42 @@ public class SymmetricPolygon extends Shape {
 
 	}
 
-//	public void drawSimple(float[] vMatrix, float[] pMatrix) {
-//		// Add program to OpenGL ES environment
-//		GLES20.glUseProgram(shaderProgram);
-//
-//		// get handle to vertex shader's vPosition member
-//		positionHandle = GLES20.glGetAttribLocation(shaderProgram, "vPosition");
-//
-//		// Enable a handle to the triangle vertices
-//		GLES20.glEnableVertexAttribArray(positionHandle);
-//
-//		// Prepare the triangle coordinate data
-//		GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
-//				GLES20.GL_FLOAT, false, 12, super.vertexBuffer);
-//
-//		// get handle to fragment shader's vColor member
-//		colorHandle = GLES20.glGetUniformLocation(shaderProgram, "vColor");
-//
-//		// Set color for drawing the triangle
-//		GLES20.glUniform4fv(colorHandle, 1, color, 0);
-//
-//		// get handle to shape's transformation matrix
-//		mMVPMatrixHandle = GLES20.glGetUniformLocation(shaderProgram,
-//				"uMVPMatrix");
-//
-//		float[] inputMatrix = new float[16];
-//		Matrix.multiplyMM(inputMatrix, 0, pMatrix, 0, vMatrix, 0);
-//		Matrix.multiplyMM(inputMatrix, 0, inputMatrix, 0, modelMatrix, 0);
-//
-//		// Apply the projection and view transformation
-//		GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, inputMatrix, 0);
-//		// Draw the shape
-//		GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length,
-//				GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
-//
-//		// Disable vertex array
-//		GLES20.glDisableVertexAttribArray(positionHandle);
-//	}
+	// public void drawSimple(float[] vMatrix, float[] pMatrix) {
+	// // Add program to OpenGL ES environment
+	// GLES20.glUseProgram(shaderProgram);
+	//
+	// // get handle to vertex shader's vPosition member
+	// positionHandle = GLES20.glGetAttribLocation(shaderProgram, "vPosition");
+	//
+	// // Enable a handle to the triangle vertices
+	// GLES20.glEnableVertexAttribArray(positionHandle);
+	//
+	// // Prepare the triangle coordinate data
+	// GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
+	// GLES20.GL_FLOAT, false, 12, super.vertexBuffer);
+	//
+	// // get handle to fragment shader's vColor member
+	// colorHandle = GLES20.glGetUniformLocation(shaderProgram, "vColor");
+	//
+	// // Set color for drawing the triangle
+	// GLES20.glUniform4fv(colorHandle, 1, color, 0);
+	//
+	// // get handle to shape's transformation matrix
+	// mMVPMatrixHandle = GLES20.glGetUniformLocation(shaderProgram,
+	// "uMVPMatrix");
+	//
+	// float[] inputMatrix = new float[16];
+	// Matrix.multiplyMM(inputMatrix, 0, pMatrix, 0, vMatrix, 0);
+	// Matrix.multiplyMM(inputMatrix, 0, inputMatrix, 0, modelMatrix, 0);
+	//
+	// // Apply the projection and view transformation
+	// GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, inputMatrix, 0);
+	// // Draw the shape
+	// GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length,
+	// GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+	//
+	// // Disable vertex array
+	// GLES20.glDisableVertexAttribArray(positionHandle);
+	// }
 
 }
