@@ -1,12 +1,13 @@
 package game.first.lightlife;
 
+import util.MusicPlayer;
 import game.first.pawn.Player;
 import android.app.Activity;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.graphics.Point;
-import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,11 +26,10 @@ public class PlayActivity extends Activity {
 	private Point size;
 	private LevelSelector levels;
 	private Player player;
-	private MediaPlayer musicPlayer;
-	private Boolean withMusic, withSound, inMainMenu;
+	private MusicPlayer musicPlayer;
+	private boolean withMusic, withSound, inMainMenu;
 	private OnClickListener backButtonAction;
 	private float musicVolume, soundVolume;
-	private int currentlyPlayingSong;
 
 	/**
 	 * Called when the activity is starting
@@ -47,6 +47,7 @@ public class PlayActivity extends Activity {
 				"musicVolume", 0.5f);
 		soundVolume = getSharedPreferences(SETTING_DATA, 0).getFloat(
 				"soundVolume", 0.5f);
+		musicPlayer = new MusicPlayer(this);
 		askSound();
 
 	}
@@ -94,8 +95,10 @@ public class PlayActivity extends Activity {
 	 */
 	public void mainMenu() {
 		setContentView(R.layout.activity_play);
+		levels.stopLevel();
+		musicPlayer.setVolume(musicVolume);
 		if (withMusic) {
-			createAndPlayMusic(R.raw.and_the_faded_notes_play);
+			musicPlayer.playSong(levels.getLevelSong());
 		}
 		inMainMenu = true;
 
@@ -143,23 +146,6 @@ public class PlayActivity extends Activity {
 		});
 	}
 
-	private void createAndPlayMusic(int musicId) {
-		if (musicId == currentlyPlayingSong) {
-			if (musicPlayer != null) {
-				musicPlayer.start();
-			}
-			return;
-		}
-		if (musicPlayer != null) {
-			musicPlayer.stop();
-		}
-		musicPlayer = MediaPlayer.create(this, musicId);
-		musicPlayer.setVolume(musicVolume, musicVolume);
-		musicPlayer.setLooping(true);
-		musicPlayer.start();
-		currentlyPlayingSong = musicId;
-	}
-
 	/**
 	 * Starts a new game at the first level
 	 */
@@ -189,7 +175,8 @@ public class PlayActivity extends Activity {
 		final SeekBar musicVolumeBar = (SeekBar) findViewById(R.id.music_volume_bar);
 		musicVolumeBar.setMax(1000);
 		if (withMusic) {
-			musicVolumeBar.setProgress((int) (musicVolumeBar.getMax() * musicVolume));
+			musicVolumeBar
+					.setProgress((int) (musicVolumeBar.getMax() * musicVolume));
 		} else {
 			musicVolumeBar.setProgress(0);
 		}
@@ -199,6 +186,7 @@ public class PlayActivity extends Activity {
 					@Override
 					public void onStopTrackingTouch(SeekBar seekBar) {
 					}
+
 					@Override
 					public void onStartTrackingTouch(SeekBar seekBar) {
 					}
@@ -206,49 +194,50 @@ public class PlayActivity extends Activity {
 					@Override
 					public void onProgressChanged(SeekBar seekBar,
 							int progress, boolean fromUser) {
-						if (musicPlayer != null) {
-							musicVolume = (float) progress
-									/ (float) seekBar.getMax();
-							withMusic = true;
-							musicPlayer.setVolume(musicVolume, musicVolume);
-							musicPlayer.start();
-						} else {
-							musicVolume = (float) progress
-									/ (float) seekBar.getMax();
-							withMusic = true;
-							createAndPlayMusic(R.raw.and_the_faded_notes_play);
-						}
+
+						musicVolume = (float) progress
+								/ (float) seekBar.getMax();
+						withMusic = true;
+						musicPlayer.setVolume(musicVolume);
+						musicPlayer.playSong(levels.getLevelSong());
+
 						if (progress == 0) {
 							musicPlayer.pause();
 							withMusic = false;
 						}
 					}
 				});
-		
+
 		final SeekBar soundVolumeBar = (SeekBar) findViewById(R.id.sound_volume_bar);
 		soundVolumeBar.setMax(1000);
 		if (withSound) {
-			soundVolumeBar.setProgress((int) (soundVolumeBar.getMax() * soundVolume));
+			soundVolumeBar
+					.setProgress((int) (soundVolumeBar.getMax() * soundVolume));
 		} else {
 			soundVolumeBar.setProgress(0);
 		}
-		
-		soundVolumeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-			}
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-			}
-			
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress,
-					boolean fromUser) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		
+
+		soundVolumeBar
+				.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+					@Override
+					public void onStopTrackingTouch(SeekBar seekBar) {
+					}
+
+					@Override
+					public void onStartTrackingTouch(SeekBar seekBar) {
+					}
+
+					@Override
+					public void onProgressChanged(SeekBar seekBar,
+							int progress, boolean fromUser) {
+						soundVolume = (float) progress
+								/ (float) seekBar.getMax();
+						withSound = true;
+						if (progress == 0) {
+							withSound = false;
+						}
+					}
+				});
 
 	}
 
@@ -321,11 +310,8 @@ public class PlayActivity extends Activity {
 		setting.apply();
 		if (view != null) {
 			view.onPause();
-		}
-		if (musicPlayer != null) {
-			musicPlayer.pause();
-		}
-
+		}	
+		musicPlayer.pause();
 	}
 
 	/**
@@ -334,9 +320,8 @@ public class PlayActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		if (musicPlayer != null && withMusic) {
-			musicPlayer.start();
+		if (withMusic) {
+			musicPlayer.playSong(levels.getLevelSong());
 		}
 		if (levels.getLastPlayed() != null) {
 			display = getWindowManager().getDefaultDisplay();
@@ -355,7 +340,9 @@ public class PlayActivity extends Activity {
 			}
 		};
 		view = new PlayView(this, player, size);
-		//createAndPlayMusic(levels.getLevel(levels.getLastPlayed()).getMusicId());
+		if (withMusic) {
+			musicPlayer.playSong(levels.getLevelSong());
+		}
 		setContentView(view);
 	}
 

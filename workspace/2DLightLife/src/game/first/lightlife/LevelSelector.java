@@ -16,8 +16,20 @@ public class LevelSelector {
 
 	}
 	
+	public void stopLevel() {
+		levelRunning = null;
+	}
+	
 	public Level getLevel(String level) {
 		return levels.get(level);
+	}
+	
+	public int getLevelSong() {
+		if (levelRunning == null) {
+			return R.raw.and_the_faded_notes_play;
+		} else {
+			return levels.get(levelRunning).getMusicId();
+		}
 	}
 
 	/**
