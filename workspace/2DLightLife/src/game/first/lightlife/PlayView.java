@@ -2,32 +2,36 @@ package game.first.lightlife;
 
 import game.first.graphics.FrameRenderer;
 import game.first.pawn.Player;
+import gui.CustomView;
 import util.ErrorHandler;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
-public class PlayView extends GLSurfaceView implements ErrorHandler {
+public class PlayView extends GLSurfaceView implements ErrorHandler, CustomView {
 	
 	private GameLoop looper;
 	private Point size;
 	public final float[] controlVals = new float[4];
+	private PlayActivity act;
 
-	public PlayView(Context context, Player player, Point size) {
+	public PlayView(PlayActivity context, Player player, Point size) {
 		super(context);
+		act = context;
 		setEGLContextClientVersion(2);
 		setRenderer(new FrameRenderer(player), 1f);
 		this.size = size;
 		looper = new GameLoop(this, player);
 	}
 
-	public PlayView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
+//	public PlayView(PlayActivity context, AttributeSet attrs) {
+//		super(context, attrs);
+//	}
 
 	@Override
 	public void handleError(final ErrorType errorType, final String cause) {
@@ -131,21 +135,40 @@ public class PlayView extends GLSurfaceView implements ErrorHandler {
 		}
 	}
 
-	@Override
-	public void onPause() {
-		looper.onPause();
-		super.onPause();
-	}
-	
-	@Override
-	public void onResume() {
-		looper.onResume();
-		super.onResume();
-	}
+//	@Override
+//	public void onPause() {
+//		looper.onPause();
+//		super.onPause();
+//	}
+//	
+//	@Override
+//	public void onResume() {
+//		looper.onResume();
+//		super.onResume();
+//	}
 
 	// Hides superclass method.
 	public void setRenderer(FrameRenderer renderer, float density) {
 		super.setRenderer(renderer);
+	}
+
+	@Override
+	public void setAsView() {
+		act.setContentView(this);
+		resume();
+	}
+
+	@Override
+	public void pause() {
+		looper.onPause();
+		super.onPause();
+		
+	}
+
+	@Override
+	public void resume() {
+		looper.onResume();
+		super.onResume();	
 	}
 
 }

@@ -1,5 +1,7 @@
-package game.first.lightlife;
+package gui;
 
+import game.first.lightlife.PlayActivity;
+import game.first.lightlife.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -8,12 +10,10 @@ import android.os.Bundle;
 
 public class PauseMenuDialog extends DialogFragment{
 
-	private PlayView view;
 	private PlayActivity activity;
 	
-	public PauseMenuDialog(PlayView view, PlayActivity activity) {
-		view.onPause();
-		this.view = view;
+	public PauseMenuDialog(PlayActivity activity) {
+		activity.pauseCurrent();
 		this.activity = activity;
 	}
 	
@@ -48,6 +48,6 @@ public class PauseMenuDialog extends DialogFragment{
 	@Override
 	public void onCancel(DialogInterface di) {
 		super.onCancel(di);
-		view.onResume();
+		activity.resumeCurrent();
 	}
 }

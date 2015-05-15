@@ -1,20 +1,24 @@
 package game.first.lightlife;
 
-import util.MusicPlayer;
 import game.first.pawn.Player;
+import gui.CustomView;
+import gui.MainMenu;
+import gui.OptionsMenu;
+import gui.PauseMenuDialog;
+import gui.SilentModePrompt;
+import util.MusicPlayer;
+import util.SoundPlayer;
 import android.app.Activity;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.SeekBar;
 
 public class PlayActivity extends Activity {
 
@@ -22,14 +26,15 @@ public class PlayActivity extends Activity {
 	public static final String SETTING_DATA = "SettingData";
 
 	private Display display;
-	private PlayView view;
 	private Point size;
 	private LevelSelector levels;
 	private Player player;
 	private MusicPlayer musicPlayer;
-	private boolean withMusic, withSound, inMainMenu;
+	private SoundPlayer soundPlayer;
+	private boolean withMusic, withSound;
 	private OnClickListener backButtonAction;
 	private float musicVolume, soundVolume;
+	private CustomView currentView;
 
 	/**
 	 * Called when the activity is starting
@@ -48,8 +53,61 @@ public class PlayActivity extends Activity {
 		soundVolume = getSharedPreferences(SETTING_DATA, 0).getFloat(
 				"soundVolume", 0.5f);
 		musicPlayer = new MusicPlayer(this);
+		soundPlayer = new SoundPlayer(this);
 		askSound();
 
+	}
+
+	/**
+	 * Enables music to play
+	 */
+	public void enableMusic() {
+		withMusic = true;
+	}
+
+	/**
+	 * Disable the playing of music
+	 */
+	public void disableMusic() {
+		withMusic = false;
+	}
+
+	/**
+	 * 
+	 * @return the current status whether music should be played or not
+	 */
+	public boolean withMusic() {
+		return withMusic;
+	}
+
+	/**
+	 * 
+	 * @return the song preferred to be played in accordance to the current mood
+	 */
+	public int getPreferredSong() {
+		return levels.getLevelSong();
+	}
+
+	/**
+	 * Enables the playing of sound effects
+	 */
+	public void enableSound() {
+		withSound = true;
+	}
+
+	/**
+	 * Disables the playing of sound effects
+	 */
+	public void disableSound() {
+		withSound = false;
+	}
+
+	/**
+	 * 
+	 * @return whether sound effects should be played
+	 */
+	public boolean withSound() {
+		return withSound;
 	}
 
 	@Override
@@ -57,93 +115,27 @@ public class PlayActivity extends Activity {
 		display = getWindowManager().getDefaultDisplay();
 		size = new Point();
 		display.getSize(size);
-		if (player != null) {
-			setPlayView();
-		}
 		super.onConfigurationChanged(newConfig);
 	}
 
+	/**
+	 * Asks the user if the app should be started in silent mode
+	 */
 	public void askSound() {
-		setContentView(R.layout.ask_sound_off);
-		inMainMenu = true;
-		final Button no = (Button) findViewById(R.id.sound_no);
-		final Button yes = (Button) findViewById(R.id.sound_yes);
-
-		no.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				withMusic = false;
-				withSound = false;
-				mainMenu();
-			}
-		});
-
-		yes.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				withMusic = true;
-				withSound = true;
-				mainMenu();
-			}
-		});
+		currentView = new SilentModePrompt(this);
+		backButtonAction = null;
 	}
 
 	/**
 	 * Changes the current view into the main menu
 	 */
 	public void mainMenu() {
-		setContentView(R.layout.activity_play);
-		levels.stopLevel();
+		currentView = new MainMenu(this, levels);
 		musicPlayer.setVolume(musicVolume);
 		if (withMusic) {
 			musicPlayer.playSong(levels.getLevelSong());
 		}
-		inMainMenu = true;
-
-		final Button newGButton = (Button) findViewById(R.id.newGButton);
-		newGButton.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				inMainMenu = false;
-				startNew();
-			}
-		});
-
-		final Button contButton = (Button) findViewById(R.id.contButton);
-		contButton.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				inMainMenu = false;
-				continueGame();
-
-			}
-		});
-
-		final Button optionsButton = (Button) findViewById(R.id.optionsButton);
-		optionsButton.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				inMainMenu = false;
-				optionsMenu();
-
-			}
-		});
-
-		final Button levelsButton = (Button) findViewById(R.id.levelsButton);
-		levelsButton.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				inMainMenu = false;
-				levelsMenu();
-
-			}
-		});
+		backButtonAction = null;
 	}
 
 	/**
@@ -161,84 +153,14 @@ public class PlayActivity extends Activity {
 	 * Changes the current view into the options menu
 	 */
 	public void optionsMenu() {
-		setContentView(R.layout.options_menu);
-		final Button backButton = (Button) findViewById(R.id.backButton);
+		currentView = new OptionsMenu(this, musicPlayer, soundPlayer);
 		backButtonAction = new View.OnClickListener() {
-
+			
 			@Override
 			public void onClick(View v) {
 				mainMenu();
 			}
 		};
-		backButton.setOnClickListener(backButtonAction);
-
-		final SeekBar musicVolumeBar = (SeekBar) findViewById(R.id.music_volume_bar);
-		musicVolumeBar.setMax(1000);
-		if (withMusic) {
-			musicVolumeBar
-					.setProgress((int) (musicVolumeBar.getMax() * musicVolume));
-		} else {
-			musicVolumeBar.setProgress(0);
-		}
-
-		musicVolumeBar
-				.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-					@Override
-					public void onStopTrackingTouch(SeekBar seekBar) {
-					}
-
-					@Override
-					public void onStartTrackingTouch(SeekBar seekBar) {
-					}
-
-					@Override
-					public void onProgressChanged(SeekBar seekBar,
-							int progress, boolean fromUser) {
-
-						musicVolume = (float) progress
-								/ (float) seekBar.getMax();
-						withMusic = true;
-						musicPlayer.setVolume(musicVolume);
-						musicPlayer.playSong(levels.getLevelSong());
-
-						if (progress == 0) {
-							musicPlayer.pause();
-							withMusic = false;
-						}
-					}
-				});
-
-		final SeekBar soundVolumeBar = (SeekBar) findViewById(R.id.sound_volume_bar);
-		soundVolumeBar.setMax(1000);
-		if (withSound) {
-			soundVolumeBar
-					.setProgress((int) (soundVolumeBar.getMax() * soundVolume));
-		} else {
-			soundVolumeBar.setProgress(0);
-		}
-
-		soundVolumeBar
-				.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-					@Override
-					public void onStopTrackingTouch(SeekBar seekBar) {
-					}
-
-					@Override
-					public void onStartTrackingTouch(SeekBar seekBar) {
-					}
-
-					@Override
-					public void onProgressChanged(SeekBar seekBar,
-							int progress, boolean fromUser) {
-						soundVolume = (float) progress
-								/ (float) seekBar.getMax();
-						withSound = true;
-						if (progress == 0) {
-							withSound = false;
-						}
-					}
-				});
-
 	}
 
 	/**
@@ -275,8 +197,16 @@ public class PlayActivity extends Activity {
 	 * Prompts the pause menu and pauses the game
 	 */
 	public void pauseMenu() {
-		PauseMenuDialog pause = new PauseMenuDialog(view, this);
+		PauseMenuDialog pause = new PauseMenuDialog(this);
 		pause.show(getFragmentManager(), "Pause");
+	}
+	
+	public void pauseCurrent() {
+		currentView.pause();
+	}
+	
+	public void resumeCurrent() {
+		currentView.resume();
 	}
 
 	/**
@@ -284,7 +214,7 @@ public class PlayActivity extends Activity {
 	 */
 	@Override
 	public void onBackPressed() {
-		if (inMainMenu) {
+		if (backButtonAction == null) {
 			onPause();
 			super.finish();
 			super.onBackPressed();
@@ -308,9 +238,9 @@ public class PlayActivity extends Activity {
 		setting.putFloat("musicVolume", musicVolume);
 		setting.putFloat("soundVolume", soundVolume);
 		setting.apply();
-		if (view != null) {
-			view.onPause();
-		}	
+		if (currentView != null) {
+			currentView.pause();
+		}
 		musicPlayer.pause();
 	}
 
@@ -323,13 +253,10 @@ public class PlayActivity extends Activity {
 		if (withMusic) {
 			musicPlayer.playSong(levels.getLevelSong());
 		}
-		if (levels.getLastPlayed() != null) {
-			display = getWindowManager().getDefaultDisplay();
-			size = new Point();
-			display.getSize(size);
-			setPlayView();
-		}
-
+		display = getWindowManager().getDefaultDisplay();
+		size = new Point();
+		display.getSize(size);
+		currentView.setAsView();
 	}
 
 	private void setPlayView() {
@@ -339,11 +266,11 @@ public class PlayActivity extends Activity {
 				pauseMenu();
 			}
 		};
-		view = new PlayView(this, player, size);
+		currentView = new PlayView(this, player, size);
 		if (withMusic) {
 			musicPlayer.playSong(levels.getLevelSong());
 		}
-		setContentView(view);
+		currentView.setAsView();
 	}
 
 }

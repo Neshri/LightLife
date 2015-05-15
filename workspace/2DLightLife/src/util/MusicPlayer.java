@@ -3,29 +3,15 @@ package util;
 import android.content.Context;
 import android.media.MediaPlayer;
 
-public class MusicPlayer {
+public class MusicPlayer extends CustomMediaPlayer {
 
-	private MediaPlayer player;
-	private Context cont;
 	private int currentlyPlayingSong, songPos;
 	private float volume;
 
 	public MusicPlayer(Context context) {
-		cont = context;
+		super(context);
 	}
 
-	public void setVolume(float value) {
-		if (value < 0) {
-			value = 0;
-		} else if (value > 1) {
-			value = 1;
-		}
-		volume = value;
-		if (player != null) {
-
-			player.setVolume(value, value);
-		}
-	}
 
 	// really pauses? I believe I get calls to the player to start after stop
 	// and release, why?
