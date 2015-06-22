@@ -20,7 +20,7 @@ public class PythagorasTree extends Shape {
 	private int rotationDegree;
 
 	public PythagorasTree(float x, float y, float z, float[] color, float size,
-			int iterations, int rotationDegree) {
+			float height, int iterations, int rotationDegree) {
 		super(x, y, z, color, false);
 		if (iterations > 10) {
 			iterations = 10;
@@ -42,11 +42,11 @@ public class PythagorasTree extends Shape {
 		verticeList.add(verticeList.get(2));
 		drawOrderList.add((short) 1);
 		verticeList.add(verticeList.get(0) + sizeAdd);
-		verticeList.add(verticeList.get(1) + sizeAdd * 2);
+		verticeList.add(verticeList.get(1) + height);
 		verticeList.add(verticeList.get(2));
 		drawOrderList.add((short) 2);
 		verticeList.add(verticeList.get(0));
-		verticeList.add(verticeList.get(1) + sizeAdd * 2);
+		verticeList.add(verticeList.get(1) + height);
 		verticeList.add(verticeList.get(2));
 		drawOrderList.add((short) 0);
 		drawOrderList.add((short) 2);

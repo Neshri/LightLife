@@ -2,6 +2,8 @@ package game.first.lightlife;
 
 import game.first.pawn.Player;
 import gui.CustomView;
+import gui.LevelEndedDialog;
+import gui.LevelsMenu;
 import gui.MainMenu;
 import gui.OptionsMenu;
 import gui.PauseMenuDialog;
@@ -9,6 +11,7 @@ import gui.SilentModePrompt;
 import util.MusicPlayer;
 import util.SoundPlayer;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -16,9 +19,10 @@ import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.widget.TextView;
 
 public class PlayActivity extends Activity {
 
@@ -33,8 +37,8 @@ public class PlayActivity extends Activity {
 	private SoundPlayer soundPlayer;
 	private boolean withMusic, withSound;
 	private OnClickListener backButtonAction;
-	private float musicVolume, soundVolume;
 	private CustomView currentView;
+	private TextView textPrompt;
 
 	/**
 	 * Called when the activity is starting
@@ -48,11 +52,7 @@ public class PlayActivity extends Activity {
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		levels = new LevelSelector();
-		musicVolume = getSharedPreferences(SETTING_DATA, 0).getFloat(
-				"musicVolume", 0.5f);
-		soundVolume = getSharedPreferences(SETTING_DATA, 0).getFloat(
-				"soundVolume", 0.5f);
-		musicPlayer = new MusicPlayer(this);
+		musicPlayer = new MusicPlayer(this, levels.getLevelSong());
 		soundPlayer = new SoundPlayer(this);
 		askSound();
 
@@ -131,9 +131,8 @@ public class PlayActivity extends Activity {
 	 */
 	public void mainMenu() {
 		currentView = new MainMenu(this, levels);
-		musicPlayer.setVolume(musicVolume);
 		if (withMusic) {
-			musicPlayer.playSong(levels.getLevelSong());
+			musicPlayer.playSong(levels.getLevelSong(), 0);
 		}
 		backButtonAction = null;
 	}
@@ -145,22 +144,33 @@ public class PlayActivity extends Activity {
 		display = getWindowManager().getDefaultDisplay();
 		size = new Point();
 		display.getSize(size);
-		player = levels.loadLevel("TestLevel");
+		player = levels.loadLevel("FirstLevel");
 		setPlayView();
 	}
 
 	/**
 	 * Changes the current view into the options menu
 	 */
-	public void optionsMenu() {
+	public void optionsMenu(boolean inGame) {
 		currentView = new OptionsMenu(this, musicPlayer, soundPlayer);
-		backButtonAction = new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				mainMenu();
-			}
-		};
+		if (inGame) {
+			backButtonAction = new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					setPlayView();
+				}
+			};
+		} else {
+			backButtonAction = new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					mainMenu();
+				}
+			};
+		}
+
 	}
 
 	/**
@@ -181,16 +191,13 @@ public class PlayActivity extends Activity {
 	 * which level to start
 	 */
 	public void levelsMenu() {
-		setContentView(R.layout.levels_menu);
-		final Button backButton = (Button) findViewById(R.id.backButton);
+		currentView = new LevelsMenu(this);
 		backButtonAction = new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				mainMenu();
 			}
 		};
-		backButton.setOnClickListener(backButtonAction);
-
 	}
 
 	/**
@@ -200,11 +207,24 @@ public class PlayActivity extends Activity {
 		PauseMenuDialog pause = new PauseMenuDialog(this);
 		pause.show(getFragmentManager(), "Pause");
 	}
+
+	public void objectiveSuccess() {
+		LevelEndedDialog end = new LevelEndedDialog(this);
+		end.show(getFragmentManager(), "End");
+	}
 	
+	public void startNextLevel() {
+		display = getWindowManager().getDefaultDisplay();
+		size = new Point();
+		display.getSize(size);
+		player = levels.loadNextLevel();
+		setPlayView();
+	}
+
 	public void pauseCurrent() {
 		currentView.pause();
 	}
-	
+
 	public void resumeCurrent() {
 		currentView.resume();
 	}
@@ -235,8 +255,8 @@ public class PlayActivity extends Activity {
 		}
 		save.apply();
 		Editor setting = getSharedPreferences(SETTING_DATA, 0).edit();
-		setting.putFloat("musicVolume", musicVolume);
-		setting.putFloat("soundVolume", soundVolume);
+		setting.putFloat("musicVolume", musicPlayer.getVolume());
+		setting.putFloat("soundVolume", soundPlayer.getVolume());
 		setting.apply();
 		if (currentView != null) {
 			currentView.pause();
@@ -250,8 +270,11 @@ public class PlayActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		SharedPreferences setting = getSharedPreferences(SETTING_DATA, 0);
+		musicPlayer.setVolume(setting.getFloat("musicVolume", 0.5f));
+		soundPlayer.setVolume(setting.getFloat("soundVolume", 0.5f));
 		if (withMusic) {
-			musicPlayer.playSong(levels.getLevelSong());
+			musicPlayer.resume();
 		}
 		display = getWindowManager().getDefaultDisplay();
 		size = new Point();
@@ -268,9 +291,28 @@ public class PlayActivity extends Activity {
 		};
 		currentView = new PlayView(this, player, size);
 		if (withMusic) {
-			musicPlayer.playSong(levels.getLevelSong());
+			musicPlayer.playSong(levels.getLevelSong(), 0);
 		}
 		currentView.setAsView();
+		setPromptText(player.getLevel().getStartText());
+	}
+
+	public void destroyPrompt() {
+		((ViewGroup) textPrompt.getParent()).removeView(textPrompt);
+	}
+
+	public void setPromptText(String str) {
+		textPrompt = new TextView(this);
+		textPrompt.setBackgroundColor(0x9F000000);
+		textPrompt.setTextColor(0xFFFFFFFF);
+		float txtSize = (10 * size.x / size.y);
+		textPrompt.setTextSize(txtSize);
+		textPrompt.setText(str);
+		this.addContentView((View) textPrompt, new ViewGroup.LayoutParams(
+				ViewGroup.LayoutParams.MATCH_PARENT,
+				ViewGroup.LayoutParams.MATCH_PARENT));
+		textPrompt.setGravity(android.view.Gravity.CENTER);
+		textPrompt.setVisibility(View.VISIBLE);
 	}
 
 }

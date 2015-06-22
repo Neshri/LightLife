@@ -14,7 +14,6 @@ import java.util.Observer;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
 
 public class FrameRenderer extends GLRenderer implements Observer {
 	private final float[] mProjectionMatrix = new float[16];
@@ -94,8 +93,6 @@ public class FrameRenderer extends GLRenderer implements Observer {
 		for (int a : updateArray) {
 			updateList(a);
 		}
-		// Log.d("FPS", super.getFPS() +"");
-
 	}
 
 	private void updateList(int type) {
@@ -105,7 +102,6 @@ public class FrameRenderer extends GLRenderer implements Observer {
 			createDynamicShapes();
 			break;
 		case World.POINT_LIGHT:
-			//Log.d("Graphics", "keke");
 			pointLights = world.getPointLights();
 			break;
 		case World.STATIC_SHAPES:

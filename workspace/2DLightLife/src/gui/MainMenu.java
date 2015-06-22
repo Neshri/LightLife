@@ -47,7 +47,7 @@ public class MainMenu implements CustomView {
 
 			@Override
 			public void onClick(View v) {
-				act.optionsMenu();
+				act.optionsMenu(false);
 
 			}
 		});

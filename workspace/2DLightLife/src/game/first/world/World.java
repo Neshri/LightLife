@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
-import java.util.concurrent.ConcurrentHashMap;
 
 import android.util.Log;
 

@@ -1,18 +1,15 @@
 package game.first.pawn;
 
-import game.first.lighting.LightSource;
+import game.first.levels.Level;
 import game.first.lighting.PointLight;
 import game.first.math.FloatPoint;
 import game.first.mechanics.DestructionLight;
 import game.first.mechanics.LightPulse;
-import game.first.props.Rectangle;
 import game.first.props.Shape;
 import game.first.props.SymmetricPolygon;
 import game.first.world.World;
 
 import java.util.Observable;
-
-import android.util.Log;
 
 import util.InvalidFormatException;
 
@@ -43,10 +40,12 @@ public class Player extends Observable implements Pawn {
 	private PointLight lightAura;
 	private LightPulse lightBreath;
 	private DestructionLight gun;
+	private Level currentLevel;
 
 
-	public Player(float x, float y, World world) {
+	public Player(float x, float y, World world, Level level) {
 		this.world = world;
+		currentLevel = level;
 		camera = new Camera(x, y, 0f);
 		addObserver(camera);
 		vPosition[0] = x;
@@ -61,16 +60,20 @@ public class Player extends Observable implements Pawn {
 			//playerModel.setShaders(vertexShaderCode, fragmentShaderCode);
 			world.createDynamic(playerModel);
 			
-			lightAura = new PointLight(x, y, 2f, color, 0.6f);
+			lightAura = new PointLight(x, y, 2f, color, 0.9f);
 			world.addPointLight(lightAura);
 			lightBreath = new LightPulse(lightAura, 0.1f, 1);
 		} catch (InvalidFormatException e) {
 
 			e.printStackTrace();
 		}
-		new Follower(x, y-1, this, world);
+		//new Follower(x, y-1, this, world);
 		gun = new DestructionLight(world);
 		control = new Controller(this);
+	}
+	
+	public Level getLevel() {
+		return currentLevel;
 	}
 
 	public void move(float x, float y) {

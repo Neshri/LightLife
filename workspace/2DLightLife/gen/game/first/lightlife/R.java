@@ -1095,7 +1095,6 @@ containing a value of this type.
         public static final int activity_chooser_view_content=0x7f060025;
         public static final int always=0x7f06000b;
         public static final int ask_for_sound=0x7f060042;
-        public static final int backButton=0x7f060045;
         public static final int beginning=0x7f060011;
         public static final int checkbox=0x7f06002d;
         public static final int collapseActionView=0x7f06000d;
@@ -1118,7 +1117,7 @@ containing a value of this type.
         public static final int list_item=0x7f060029;
         public static final int middle=0x7f060012;
         public static final int musicComposer=0x7f060040;
-        public static final int musicVolumeText=0x7f060046;
+        public static final int musicVolumeText=0x7f060048;
         public static final int music_volume_bar=0x7f060047;
         public static final int never=0x7f060009;
         public static final int newGButton=0x7f06003f;
@@ -1129,7 +1128,7 @@ containing a value of this type.
         public static final int progress_horizontal=0x7f060019;
         public static final int radio=0x7f06002f;
         public static final int reminder=0x7f060044;
-        public static final int resumeButton=0x7f06004a;
+        public static final int resumeButton=0x7f060049;
         public static final int search_badge=0x7f060032;
         public static final int search_bar=0x7f060031;
         public static final int search_button=0x7f060033;
@@ -1144,15 +1143,16 @@ containing a value of this type.
         public static final int showCustom=0x7f060007;
         public static final int showHome=0x7f060004;
         public static final int showTitle=0x7f060006;
-        public static final int soundVolumeText=0x7f060048;
+        public static final int soundVolumeText=0x7f060046;
         public static final int sound_no=0x7f060043;
-        public static final int sound_volume_bar=0x7f060049;
+        public static final int sound_volume_bar=0x7f060045;
         public static final int sound_yes=0x7f060041;
         public static final int split_action_bar=0x7f06001e;
         public static final int submit_area=0x7f060039;
         public static final int tabMode=0x7f060002;
         public static final int title=0x7f06002b;
         public static final int top_action_bar=0x7f060020;
+        public static final int txtpromptview=0x7f06004a;
         public static final int up=0x7f060021;
         public static final int useLogo=0x7f060003;
         public static final int withText=0x7f06000c;
@@ -1213,6 +1213,7 @@ containing a value of this type.
         public static final int options_menu=0x7f03001b;
         public static final int pause_menu=0x7f03001c;
         public static final int support_simple_spinner_dropdown_item=0x7f03001d;
+        public static final int text_prompt=0x7f03001e;
     }
     public static final class menu {
         public static final int main=0x7f0d0000;
@@ -1275,9 +1276,11 @@ containing a value of this type.
         public static final int continue_game=0x7f0b0011;
         public static final int error_unknown=0x7f0b0017;
         public static final int hello_world=0x7f0b000e;
+        public static final int level_complete=0x7f0b0020;
         public static final int level_selector=0x7f0b0013;
         public static final int music_volume=0x7f0b001c;
         public static final int new_game=0x7f0b0010;
+        public static final int next_level=0x7f0b0021;
         public static final int no=0x7f0b001a;
         public static final int options_menu=0x7f0b0012;
         public static final int pause_menu=0x7f0b0016;

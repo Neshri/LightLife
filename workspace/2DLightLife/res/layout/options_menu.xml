@@ -3,46 +3,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:text="@string/back_button" />
-
-    <TextView
-        android:id="@+id/musicVolumeText"
-        android:layout_width="wrap_content"
+    <SeekBar
+        android:id="@+id/sound_volume_bar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/backButton"
-        android:layout_marginLeft="40dp"
-        android:ems="10"
-        android:text="@string/music_volume" />
+        android:layout_below="@+id/soundVolumeText"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp" />
 
     <SeekBar
         android:id="@+id/music_volume_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/musicVolumeText"
-        android:layout_below="@+id/musicVolumeText"
-        android:paddingRight="20dp" />
+        android:layout_above="@+id/soundVolumeText"
+        android:layout_marginBottom="20dp"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp" />
+
+    <TextView
+        android:id="@+id/musicVolumeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/music_volume_bar"
+        android:layout_alignLeft="@+id/soundVolumeText"
+        android:ems="10"
+        android:text="@string/music_volume" />
 
     <TextView
         android:id="@+id/soundVolumeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/music_volume_bar"
+        android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="80dp"
         android:text="@string/sound_volume" />
-
-    <SeekBar
-        android:id="@+id/sound_volume_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/soundVolumeText"
-        android:layout_below="@+id/soundVolumeText"
-        android:paddingRight="20dp" />
 
 </RelativeLayout>

@@ -4,6 +4,7 @@ import game.first.lightlife.PlayActivity;
 import game.first.lightlife.R;
 import util.MusicPlayer;
 import util.SoundPlayer;
+import android.util.Log;
 import android.widget.SeekBar;
 
 public class OptionsMenu implements CustomView {
@@ -17,23 +18,12 @@ public class OptionsMenu implements CustomView {
 		this.act = act;
 		this.musicPlayer = musicPlayer;
 		this.soundPlayer = soundPlayer;
-
 		setAsView();
 	}
 
 	@Override
 	public void setAsView() {
 		act.setContentView(R.layout.options_menu);
-		// final Button backButton = (Button) act.findViewById(R.id.backButton);
-		// backButtonAction = new View.OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View v) {
-		// mainMenu();
-		// }
-		// };
-		// backButton.setOnClickListener(backButtonAction);
-
 		final SeekBar musicVolumeBar = (SeekBar) act
 				.findViewById(R.id.music_volume_bar);
 		musicVolumeBar.setMax(1000);
@@ -63,7 +53,7 @@ public class OptionsMenu implements CustomView {
 								/ (float) seekBar.getMax();
 						act.enableMusic();
 						musicPlayer.setVolume(musicVolume);
-						musicPlayer.playSong(act.getPreferredSong());
+						musicPlayer.resume();
 
 						if (progress == 0) {
 							musicPlayer.pause();
@@ -95,10 +85,10 @@ public class OptionsMenu implements CustomView {
 					@Override
 					public void onProgressChanged(SeekBar seekBar,
 							int progress, boolean fromUser) {
-						
-						float volume = (float) progress
+
+						float soundVolume = (float) progress
 								/ (float) seekBar.getMax();
-						soundPlayer.setVolume(volume);
+						soundPlayer.setVolume(soundVolume);
 						act.enableSound();
 						if (progress == 0) {
 							act.disableSound();
@@ -109,8 +99,7 @@ public class OptionsMenu implements CustomView {
 	}
 
 	/**
-	 * Not supported
-	 * (does nothing)
+	 * Not supported (does nothing)
 	 */
 	@Override
 	public void pause() {

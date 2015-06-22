@@ -1,22 +1,38 @@
 package game.first.lightlife;
 
-import java.util.HashMap;
-
-import game.first.levels.*;
+import game.first.levels.FirstLevel;
+import game.first.levels.Level;
+import game.first.levels.TestLevel;
+import game.first.mechanics.Objective;
 import game.first.pawn.Player;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LevelSelector {
 
 	private HashMap<String, Level> levels;
 	private String levelRunning;
+	private Objective currentObjective;
+	private ArrayList<String> levelOrder;
 
 	public LevelSelector() {
 		levels = new HashMap<String, Level>();
+		levelOrder = new ArrayList<String>();
 		levels.put("TestLevel", new TestLevel());
-
+		levelOrder.add("TestLevel");
+		levels.put("FirstLevel", new FirstLevel());
+		levelOrder.add("FirstLevel");
 	}
 	
+	
+	
 	public void stopLevel() {
+		if (levelRunning == null) {
+			return;
+		}
+		Level temp = levels.get(levelRunning);
+		temp.destroy();
 		levelRunning = null;
 	}
 	
@@ -41,6 +57,31 @@ public class LevelSelector {
 	public String getLastPlayed() {
 		return levelRunning;
 	}
+	
+	public Objective getCurrentObjective() {
+		return currentObjective;
+	}
+	
+	public Player loadNextLevel() {
+		if (levelRunning == null) {
+			return null;
+		}
+		int next = 0;
+		for (int i = 0; i < levelOrder.size(); i++) {
+			if (levelOrder.get(i).equals(levelRunning)) {
+				next = i + 1;
+				break;
+			}
+		}
+		stopLevel();
+		Level temp = levels.get(levelOrder.get(next));
+		Player player = temp.load();
+		currentObjective = temp.getObjective();
+		levelRunning = levelOrder.get(next);
+		return player;
+	}
+	
+	
 
 	/**
 	 * Loads the requested level and returns the player for the level, if no
@@ -50,12 +91,15 @@ public class LevelSelector {
 	 * @return Player
 	 */
 	public Player loadLevel(String level) {
+		stopLevel();
 		Level temp = levels.get(level);
 		if (temp == null) {
 			return null;
 		}
+		Player player = temp.load();
+		currentObjective = temp.getObjective();
 		levelRunning = level;
-		return temp.load();
+		return player;
 	}
 
 }

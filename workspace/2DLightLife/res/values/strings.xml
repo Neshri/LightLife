@@ -20,5 +20,7 @@
     <string name="back_to_main">Return to main menu</string>
     <string name="composer">Music by Jani Rantanen</string>
     <string name="sound_volume">Sound Volume</string>
+    <string name="level_complete">Success!</string>
+    <string name="next_level">Move on</string>
 
 </resources>

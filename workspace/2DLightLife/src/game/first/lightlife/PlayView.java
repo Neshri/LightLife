@@ -5,12 +5,11 @@ import game.first.pawn.Player;
 import gui.CustomView;
 import util.ErrorHandler;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class PlayView extends GLSurfaceView implements ErrorHandler, CustomView {
@@ -27,6 +26,8 @@ public class PlayView extends GLSurfaceView implements ErrorHandler, CustomView 
 		setRenderer(new FrameRenderer(player), 1f);
 		this.size = size;
 		looper = new GameLoop(this, player);
+		
+		
 	}
 
 //	public PlayView(PlayActivity context, AttributeSet attrs) {
@@ -61,6 +62,7 @@ public class PlayView extends GLSurfaceView implements ErrorHandler, CustomView 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (!looper.isAlive()) {
+			act.destroyPrompt();
 			looper.start();
 		}
 		if (event != null) {
@@ -135,17 +137,11 @@ public class PlayView extends GLSurfaceView implements ErrorHandler, CustomView 
 		}
 	}
 
-//	@Override
-//	public void onPause() {
-//		looper.onPause();
-//		super.onPause();
-//	}
-//	
-//	@Override
-//	public void onResume() {
-//		looper.onResume();
-//		super.onResume();
-//	}
+	
+	public void objectiveSuccess() {
+		pause();
+		act.objectiveSuccess();
+	}
 
 	// Hides superclass method.
 	public void setRenderer(FrameRenderer renderer, float density) {

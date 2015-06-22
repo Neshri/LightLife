@@ -311,5 +311,9 @@ public abstract class Shape {
 		position[0] += x;
 		position[1] += y;
 	}
+	
+	public void rotate(float degree) {
+		Matrix.rotateM(modelMatrix, 0, degree, 0, 0, 1);
+	}
 
 }

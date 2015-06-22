@@ -1,5 +1,6 @@
 package game.first.lightlife;
 
+import game.first.mechanics.Objective;
 import game.first.pawn.Controller;
 import game.first.pawn.Player;
 import game.first.world.World;
@@ -12,9 +13,11 @@ public class GameLoop extends Thread {
 	private World world;
 	private Controller control;
 	private float[] controlVals;
+	private Objective objective;
 	
 	public GameLoop(PlayView view, Player player) {
 		this.view = view;
+		objective = player.getLevel().getObjective();
 		shouldPause = false;
 		world = player.getWorld();
 		control = player.getController();
@@ -39,7 +42,9 @@ public class GameLoop extends Thread {
 			world.step();
 			controlVals = view.controlVals;
 			control.update(controlVals[0], controlVals[1], controlVals[2], controlVals[3]);
-			
+			if (objective != null && objective.isCompleted()) {				
+				view.objectiveSuccess();
+			}
 			try {
 				sleep(10);
 			} catch (InterruptedException e) {

@@ -20,6 +20,16 @@ public class FloatPoint {
 		return y;
 	}
 
+	public float distance(FloatPoint other) {
+		if (other == null) {
+			return -1;
+		}
+		float oX = other.getX();
+		float oY = other.getY();
+		float ans = (float)Math.sqrt((oX - x) * (oX - x) + (oY - y) * (oY - y));
+		return ans;
+	}
+
 	public void normalize() {
 		float abs = (float) Math.sqrt((double) x * x + (double) y * y);
 		x = x / abs;
@@ -62,7 +72,7 @@ public class FloatPoint {
 	public FloatPoint mult(float multiplier) {
 		return new FloatPoint(x * multiplier, y * multiplier);
 	}
-	
+
 	public FloatPoint div(float divisor) {
 		return new FloatPoint(x / divisor, y / divisor);
 	}

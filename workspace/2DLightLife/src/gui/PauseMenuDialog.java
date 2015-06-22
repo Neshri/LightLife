@@ -21,21 +21,15 @@ public class PauseMenuDialog extends DialogFragment{
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setTitle(R.string.pause_menu);
-//		builder.setNegativeButton(R.string.resume_button, new DialogInterface.OnClickListener() {
-//	           public void onClick(DialogInterface dialog, int id) {
-//	        	   view.onResume();
-//	               // User clicked OK button
-//	           }
-//	       });
-//		builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-//			
-//			@Override
-//			public void onCancel(DialogInterface dialog) {
-//				view.onResume();
-//				
-//			}
-//		});
 		
+		builder.setNeutralButton(R.string.options_menu, new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				activity.optionsMenu(true);
+				
+			}
+		});
 		builder.setNegativeButton(R.string.back_to_main, new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
 	        	   activity.mainMenu();

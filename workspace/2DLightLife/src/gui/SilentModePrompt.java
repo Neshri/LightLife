@@ -24,6 +24,7 @@ public class SilentModePrompt implements CustomView {
 			@Override
 			public void onClick(View v) {
 				act.disableSound();
+				act.disableMusic();
 				act.mainMenu();
 			}
 		});
@@ -32,6 +33,7 @@ public class SilentModePrompt implements CustomView {
 			@Override
 			public void onClick(View v) {
 				act.enableSound();
+				act.enableMusic();
 				act.mainMenu();
 			}
 		});
@@ -48,7 +50,6 @@ public class SilentModePrompt implements CustomView {
 	@Override
 	public void resume() {
 		setAsView();
-
 	}
 
 }

@@ -10,6 +10,9 @@ public class PointLight extends LightSource {
 	}
 	
 	public void setStrength(float strength) {
+		if (strength < 0) {
+			strength = 0;
+		}
 		this.strength = strength;
 	}
 	

@@ -2,48 +2,77 @@ package util;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 
 public class MusicPlayer extends CustomMediaPlayer {
 
 	private int currentlyPlayingSong, songPos;
-	private float volume;
 
-	public MusicPlayer(Context context) {
+	public MusicPlayer(Context context, int defaultSong) {
 		super(context);
+		currentlyPlayingSong = defaultSong;
 	}
 
-
-	// really pauses? I believe I get calls to the player to start after stop
-	// and release, why?
 	public void pause() {
 		if (player != null) {
-			songPos = player.getCurrentPosition();
-			player.stop();
-			player.release();
+			try {
+				songPos = player.getCurrentPosition();
+			} catch (IllegalStateException e) {
+				songPos = 0;
+			}
+			stop(player);
+			player = null;
 		}
 	}
 
-	public void playSong(int song) {
+	public void resume() {
+		playSong(currentlyPlayingSong, songPos);
+	}
+
+	public void playSong(int song, int songPos) {
 		if (currentlyPlayingSong != song) {
 			if (player != null) {
-				player.stop();
+				stop(player);
 			}
 			player = MediaPlayer.create(cont, song);
-			player.setLooping(true);
-			player.setVolume(volume, volume);
-			player.start();
+			player.setOnErrorListener(new MediaError());
+			if (player == null) {
+				return;
+			}
+			this.songPos = songPos;
+			start(player);
 			currentlyPlayingSong = song;
 		} else {
-			// throws illegal state, solve!
-			if (!player.isPlaying()) {
+			if (player == null) {
 				player = MediaPlayer.create(cont, song);
-				player.setLooping(true);
+				player.setOnErrorListener(new MediaError());
+				start(player);
+				return;
+			}
+			try {
+				if (player.isPlaying()) {
+					return;
+				}
+			} catch (IllegalStateException e) {
+				player = MediaPlayer.create(cont, song);
+				player.setOnErrorListener(new MediaError());
 				player.setVolume(volume, volume);
-				player.seekTo(songPos);
+				player.setLooping(true);
 				player.start();
 			}
 		}
-
 	}
 
+	private void stop(MediaPlayer mp) {
+		mp.setLooping(false);
+		mp.stop();
+		mp.release();
+	}
+
+	private void start(MediaPlayer mp) {
+		mp.setLooping(true);
+		mp.setVolume(volume, volume);
+		mp.seekTo(songPos);
+		mp.start();
+	}
 }
