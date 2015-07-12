@@ -5,28 +5,14 @@ import game.first.lighting.PointLight;
 import game.first.math.FloatPoint;
 import game.first.mechanics.DestructionLight;
 import game.first.mechanics.LightPulse;
+import game.first.props.Rectangle;
 import game.first.props.Shape;
 import game.first.props.SymmetricPolygon;
 import game.first.world.World;
 
 import java.util.Observable;
 
-import util.InvalidFormatException;
-
 public class Player extends Observable implements Pawn {
-
-	// This matrix member variable provides a hook to manipulate
-	// the coordinates of the objects that use this vertex shader
-	private String vertexShaderCode = "uniform mat4 uMVPMatrix;"
-			+ "attribute vec4 vPosition;" + "void main() {" +
-			// the matrix must be included as a modifier of gl_Position
-			// Note that the uMVPMatrix factor *must be first* in order
-			// for the matrix multiplication product to be correct.
-			"  gl_Position = uMVPMatrix * vPosition;" + "}";
-
-	private String fragmentShaderCode = "precision mediump float;"
-			+ "uniform vec4 vColor;" + "void main() {"
-			+ "  gl_FragColor = vColor;" + "}";
 
 	private final static float SLOWDOWNSPEED = 1.1f;
 	private final static float SPEEDCAP = 0.5f;
@@ -41,10 +27,11 @@ public class Player extends Observable implements Pawn {
 	private LightPulse lightBreath;
 	private DestructionLight gun;
 	private Level currentLevel;
+	private boolean cannonEnabled;
 
-
-	public Player(float x, float y, World world, Level level) {
+	public Player(float x, float y, float[] color, World world, Level level) {
 		this.world = world;
+		cannonEnabled = true;
 		currentLevel = level;
 		camera = new Camera(x, y, 0f);
 		addObserver(camera);
@@ -53,25 +40,20 @@ public class Player extends Observable implements Pawn {
 
 		vDirection[0] = 0f;
 		vDirection[1] = 0f;
-		float[] color = { 1.0f, 1.0f, 1.0f, 1.0f };
-		try {
-			// Creates the Player model
-			playerModel = new SymmetricPolygon(8, 0.1f, color, x, y, 2, true, false);
-			//playerModel.setShaders(vertexShaderCode, fragmentShaderCode);
-			world.createDynamic(playerModel);
-			
-			lightAura = new PointLight(x, y, 2f, color, 0.9f);
-			world.addPointLight(lightAura);
-			lightBreath = new LightPulse(lightAura, 0.1f, 1);
-		} catch (InvalidFormatException e) {
 
-			e.printStackTrace();
-		}
-		//new Follower(x, y-1, this, world);
-		gun = new DestructionLight(world);
+		// Creates the Player model
+		playerModel = new SymmetricPolygon(8, 0.1f, color, x, y, 2, true, false);
+		
+		world.createDynamic(playerModel);
+
+		lightAura = new PointLight(x, y, 2f, color, 0.9f);
+		world.addPointLight(lightAura);
+		lightBreath = new LightPulse(lightAura, 0.1f, 1);
+
+		gun = new DestructionLight(world, playerModel);
 		control = new Controller(this);
 	}
-	
+
 	public Level getLevel() {
 		return currentLevel;
 	}
@@ -83,8 +65,7 @@ public class Player extends Observable implements Pawn {
 			x = maxCalc.getX();
 			y = maxCalc.getY();
 		}
-		
-		
+
 		vDirection[0] = vDirection[0] + x / 500f;
 		vDirection[1] = vDirection[1] + y / 500f;
 		maxCalc = new FloatPoint(vDirection[0], vDirection[1]);
@@ -101,7 +82,6 @@ public class Player extends Observable implements Pawn {
 		if (normalVector != null) {
 			FloatPoint slide = new FloatPoint(normalVector.getY(),
 					-normalVector.getX());
-			// Log.d("Collision", normalVector.toString());
 			float multiplier = slide.dot(new FloatPoint(vDirection[0],
 					vDirection[1]));
 			slide = slide.mult(multiplier);
@@ -126,11 +106,17 @@ public class Player extends Observable implements Pawn {
 		notifyObservers();
 	}
 
-	
 	public void shoot(float x, float y) {
-		gun.shoot(new FloatPoint(x, y), new FloatPoint(vPosition[0], vPosition[1]));
+		if (cannonEnabled) {
+			gun.shoot(new FloatPoint(x, y), new FloatPoint(vPosition[0],
+					vPosition[1]));
+		}
 	}
-	
+
+	public void setCannon(boolean enabled) {
+		cannonEnabled = enabled;
+	}
+
 	public Camera getCamera() {
 		return camera;
 	}
@@ -167,12 +153,13 @@ public class Player extends Observable implements Pawn {
 	@Override
 	public void step(World world) {
 		// does nothing
-		
+
 	}
-	
+
 	@Override
 	public float getSpeed() {
-		float send = (float) Math.sqrt(vDirection[0] * vDirection[0] + vDirection[1] * vDirection[1]);
+		float send = (float) Math.sqrt(vDirection[0] * vDirection[0]
+				+ vDirection[1] * vDirection[1]);
 		return send;
 	}
 

@@ -8,8 +8,6 @@ import android.annotation.SuppressLint;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class PlayView extends GLSurfaceView implements ErrorHandler, CustomView {

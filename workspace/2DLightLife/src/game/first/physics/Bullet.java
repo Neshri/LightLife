@@ -20,11 +20,13 @@ public class Bullet implements Pawn {
 	private List<Shape> nearShapes;
 	private float strength;
 	private boolean dying;
+	private Shape shooter;
 
 	public Bullet(FloatPoint position, FloatPoint directionSpeed, World world,
-			float strength, PointLight light) {
+			Shape shooter, float strength, PointLight light) {
 		this.position = position;
 		this.directionSpeed = directionSpeed;
+		this.shooter = shooter;
 		float[] points = new float[8];
 		points[0] = position.getX() - 0.05f;
 		points[6] = points[0];
@@ -70,6 +72,9 @@ public class Bullet implements Pawn {
 		Iterator<Shape> iter = nearShapes.iterator();
 		while (iter.hasNext()) {
 			Shape test = iter.next();
+			if (test == shooter) {
+				test = iter.next();
+			}
 			if (collision.overlaps(test.collisionShape)) {
 				dying = true;
 				createdTime = System.currentTimeMillis();
@@ -80,7 +85,11 @@ public class Bullet implements Pawn {
 				} else {
 					float alpha = test.getAlpha() - strength;
 					if (alpha <= 0.1f) {
-						world.destroyStatic(test.id);
+						if (test.type == 'S') {
+							world.destroyStatic(test.id);
+						} else {
+							world.destroyDynamic(test.id);
+						}
 						return;
 					} else {
 						test.setAlpha(alpha);

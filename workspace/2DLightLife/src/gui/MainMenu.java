@@ -64,17 +64,19 @@ public class MainMenu implements CustomView {
 		});
 
 	}
-	
-	/** Not supported
+
+	/**
+	 * Not supported
 	 * 
 	 */
 	@Override
-	public void pause() {}
+	public void pause() {
+	}
 
 	@Override
 	public void resume() {
 		setAsView();
-		
+
 	}
 
 }

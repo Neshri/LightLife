@@ -14,7 +14,7 @@ public abstract class CollisionShape {
 	}
 
 	public boolean overlaps(CollisionShape shape) {
-		if (axes == null || shape.axes == null) {
+		if (shape == null || axes == null || shape.axes == null || shape == this) {
 			return false;
 		}
 		if (shape.z != z) {

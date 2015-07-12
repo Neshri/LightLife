@@ -4,7 +4,6 @@ import game.first.lightlife.PlayActivity;
 import game.first.lightlife.R;
 import util.MusicPlayer;
 import util.SoundPlayer;
-import android.util.Log;
 import android.widget.SeekBar;
 
 public class OptionsMenu implements CustomView {

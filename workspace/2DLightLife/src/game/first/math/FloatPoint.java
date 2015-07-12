@@ -1,7 +1,5 @@
 package game.first.math;
 
-import android.util.Log;
-
 public class FloatPoint {
 
 	// for projection x = min and y = max
@@ -26,7 +24,8 @@ public class FloatPoint {
 		}
 		float oX = other.getX();
 		float oY = other.getY();
-		float ans = (float)Math.sqrt((oX - x) * (oX - x) + (oY - y) * (oY - y));
+		float ans = (float) Math
+				.sqrt((oX - x) * (oX - x) + (oY - y) * (oY - y));
 		return ans;
 	}
 
@@ -66,7 +65,8 @@ public class FloatPoint {
 	public boolean overlap(FloatPoint other) {
 		float oX = other.getX();
 		float oY = other.getY();
-		return (x > oX && x < oY) || (y > oX && y < oY);
+		return (x > oX && x < oY) || (y > oX && y < oY) || (oX > x && oX < y)
+				|| (oY > x && oY < y);
 	}
 
 	public FloatPoint mult(float multiplier) {

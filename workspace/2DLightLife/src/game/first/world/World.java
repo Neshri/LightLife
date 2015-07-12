@@ -26,7 +26,7 @@ public class World extends Observable {
 	private PointNearList staticNearList;
 	private FreeList staticFree, dynamicFree;
 	@SuppressWarnings("unused")
-	private int nbrObjects;
+	private int nbrObjects, nbrStatic, nbrDynamic;
 	private SortedIntegerMap orderOfDraw;
 	private LinkedList<PointLight> pointLights;
 	private LinkedList<Pawn> pawns;
@@ -38,6 +38,8 @@ public class World extends Observable {
 		dynamicObjects = new Shape[dynNbrObj];
 		dynamicFree = new FreeList(dynNbrObj, this, 1);
 		nbrObjects = 0;
+		nbrDynamic = 0;
+		nbrStatic = 0;
 		staticNearList = new PointNearList();
 		orderOfDraw = new SortedIntegerMap();
 		pointLights = new LinkedList<PointLight>();
@@ -83,24 +85,18 @@ public class World extends Observable {
 
 	public List<Shape> getNearShapes(float[] bounds) {
 		LinkedList<Shape> send = new LinkedList<Shape>();
-		return staticNearList.retrieve(send, bounds);
-	}
-	
-	public List<CollisionShape> getNearCollision(float[] bounds) {
-		LinkedList<CollisionShape> send = new LinkedList<CollisionShape>();
-		Iterator<Shape> iter = staticNearList.retrieve(new LinkedList<Shape>(),
-				bounds).iterator();
-		while (iter.hasNext()) {
-			send.add(iter.next().collisionShape);
+		send = (LinkedList<Shape>) staticNearList.retrieve(send, bounds);
+		int count = nbrDynamic;
+		for (int i = 1; i <= count; i++) {
+			if (dynamicObjects[i] != null) {
+				send.add(dynamicObjects[i]);
+			} else {
+				count++;
+			}
 		}
-//		for (int i = 0; i < dynamicObjects.length; i++) {
-//			if (dynamicObjects[i] != null) {
-//				send.add(dynamicObjects[i].collisionShape);
-//			}
-//		}
-		// Log.d("Collision", "" + send.size());
 		return send;
 	}
+	
 
 	public void step() {
 		LinkedList<Pawn> temp = new LinkedList<Pawn>();
@@ -114,12 +110,14 @@ public class World extends Observable {
 
 	public void createStatic(Shape shape) {
 		shape.id = staticFree.getFreeId();
+		shape.type = 'S';
 		staticObjects[shape.id] = shape;
 		if (shape.getRoughBounds() != null) {
 			staticNearList.insert(shape);
 		}
 		orderOfDraw.add(shape.id, (int) shape.position[2], 'S');
 		nbrObjects++;
+		nbrStatic++;
 		notifyObs(STATIC_SHAPES);
 	}
 
@@ -128,7 +126,7 @@ public class World extends Observable {
 	}
 
 	public void destroyStatic(int id) {
-		if (id > staticObjects.length || id < 1) {
+		if (id >= staticObjects.length || id < 1) {
 			return;
 		}
 		if (staticObjects[id] == null) {
@@ -141,6 +139,7 @@ public class World extends Observable {
 		staticObjects[id] = null;
 		staticFree.storeId(id);
 		nbrObjects--;
+		nbrStatic--;
 		notifyObs(STATIC_SHAPES);
 	}
 
@@ -154,9 +153,11 @@ public class World extends Observable {
 
 	public void createDynamic(Shape shape) {
 		shape.id = dynamicFree.getFreeId();
+		shape.type = 'D';
 		dynamicObjects[shape.id] = shape;
 		orderOfDraw.add(shape.id, (int) shape.position[2], 'D');
 		nbrObjects++;
+		nbrDynamic++;
 		notifyObs(DYNAMIC_SHAPES);
 	}
 
@@ -165,13 +166,14 @@ public class World extends Observable {
 	}
 
 	public void destroyDynamic(int id) {
-		if (id > dynamicObjects.length || dynamicObjects[id] == null || id < 1) {
+		if (id >= dynamicObjects.length || dynamicObjects[id] == null || id < 1) {
 			return;
 		}
 		orderOfDraw.delete(id, (int) dynamicObjects[id].position[2], 'D');
 		dynamicObjects[id] = null;
 		dynamicFree.storeId(id);
 		nbrObjects--;
+		nbrDynamic--;
 		notifyObs(DYNAMIC_SHAPES);
 	}
 
@@ -204,6 +206,7 @@ public class World extends Observable {
 		}
 		return shapes;
 	}
+	
 
 	private class FreeList {
 

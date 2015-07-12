@@ -4,7 +4,7 @@ import android.content.Context;
 
 public class SoundPlayer extends CustomMediaPlayer {
 	
-	private float volume;
+	//private float volume;
 	
 	public SoundPlayer(Context context) {
 		super(context);

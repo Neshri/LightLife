@@ -32,10 +32,10 @@ public class LevelEndedDialog extends DialogFragment {
 		builder.setPositiveButton(R.string.next_level,
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-
-						// User clicked OK button
+						act.startNextLevel();
 					}
 				});
+		setCancelable(false);
 		return builder.create();
 	}
 }

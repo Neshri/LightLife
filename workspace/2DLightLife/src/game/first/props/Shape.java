@@ -1,7 +1,6 @@
 package game.first.props;
 
 import game.first.graphics.GLRenderer;
-import game.first.lighting.LightSource;
 import game.first.lighting.PointLight;
 import game.first.math.FloatPoint;
 import game.first.physics.CollisionShape;
@@ -10,7 +9,6 @@ import game.first.world.World;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,35 +32,12 @@ public abstract class Shape {
 			+ "v_Position = vec3(u_MMatrix * a_Position);"
 			+ "gl_Position = u_MVPMatrix * a_Position;" + "}";
 
-	// Max 5 pointLights
 	protected static final String standardFragmentShaderCode = "precision lowp float;"
+			// Max 5 pointLights
 			+ "uniform vec4 u_PointLight[20];"
 			+ "varying vec3 v_Position;"
 			+ "uniform vec4 vColor;"
 			+ "void main() {"
-			// + "int i;"
-			// + "vec3 temp = u_PointLight[0].xyz;"
-			// + "float distance = length(temp - v_Position);"
-			// + "distance = distance / u_PointLight[0].w;"
-			// + "vec4 lightColor = u_PointLight[1];"
-			// + "float test_distance;"
-			// + "for (i = 2; i < 10; i+=2) {"
-			// + "temp = u_PointLight[i].xyz;"
-			// + "test_distance = length(temp - v_Position);"
-			// + "test_distance = test_distance / u_PointLight[i].w;"
-			// + "if (test_distance < distance) {"
-			// + "distance = test_distance;"
-			// + "lightColor = u_PointLight[i+1];"
-			// + "}"
-			// + "}"
-			// + "distance = 1.0 / (distance * distance);"
-			// + "distance = clamp(distance, 0.0, 1.0);"
-			// + "lightColor.x = lightColor.x * vColor.x;"
-			// + "lightColor.y = lightColor.y * vColor.y;"
-			// + "lightColor.z = lightColor.z * vColor.z;"
-			// + "lightColor = lightColor * distance;"
-			// + "lightColor.w = vColor.w;"
-
 			+ "int i;"
 			+ "vec3 temp = u_PointLight[0].xyz;"
 			+ "float distance = length(temp - v_Position);"
@@ -85,18 +60,17 @@ public abstract class Shape {
 			+ "lightColor.x = lightColor.x * vColor.x;"
 			+ "lightColor.y = lightColor.y * vColor.y;"
 			+ "lightColor.z = lightColor.z * vColor.z;"
-			+ "lightColor.w = vColor.w;"
-
-			+ "gl_FragColor = lightColor;" + "}";
+			+ "lightColor.w = vColor.w;" + "gl_FragColor = lightColor;" + "}";
 
 	public int id;
+	public char type;
 	public static final int COORDS_PER_VERTEX = 3;
 	public float[] position = new float[3];
 	protected FloatBuffer vertexBuffer;
 	protected final float[] modelMatrix = new float[16];
 	protected int shaderProgram, positionHandle;
 	public CollisionShape collisionShape;
-	private List<CollisionShape> nearShapes;
+	private List<Shape> nearShapes;
 	private int mMVPMatrixHandle, mMMatrixHandle, colorHandle;
 	private float[] color = new float[4];
 	protected String vertexShaderCode, fragmentShaderCode;
@@ -203,20 +177,8 @@ public abstract class Shape {
 			pointLightData[i * 8 + 6] = data[2];
 			pointLightData[i * 8 + 7] = data[3];
 			i++;
-			
+
 		}
-//		for (int i = 0; i < pointLights.size(); i++) {
-//			float[] temp = pointLights.get(i).getPos();
-//			pointLightData[i * 8] = temp[0];
-//			pointLightData[i * 8 + 1] = temp[1];
-//			pointLightData[i * 8 + 2] = temp[2];
-//			pointLightData[i * 8 + 3] = pointLights.get(i).getStrength();
-//			temp = pointLights.get(i).getColor();
-//			pointLightData[i * 8 + 4] = temp[0];
-//			pointLightData[i * 8 + 5] = temp[1];
-//			pointLightData[i * 8 + 6] = temp[2];
-//			pointLightData[i * 8 + 7] = temp[3];
-//		}
 
 		GLES20.glUniform4fv(pointLightHandle, World.MAX_POINT_LIGHTS * 2,
 				pointLightData, 0);
@@ -271,10 +233,10 @@ public abstract class Shape {
 			moveWithoutCollision(x, y);
 			return send;
 		}
-		Iterator<CollisionShape> iter = nearShapes.iterator();
+		Iterator<Shape> iter = nearShapes.iterator();
 		collisionShape.move(x, y);
 		while (iter.hasNext()) {
-			if (collisionShape.overlaps(iter.next())) {
+			if (collisionShape.overlaps(iter.next().collisionShape)) {
 				collisionShape.move(-x, -y);
 				send = collisionShape.getLastMTV();
 				return send;
@@ -289,10 +251,10 @@ public abstract class Shape {
 			moveWithoutCollision(x, y);
 			return true;
 		}
-		Iterator<CollisionShape> iter = nearShapes.iterator();
+		Iterator<Shape> iter = nearShapes.iterator();
 		collisionShape.move(x, y);
 		while (iter.hasNext()) {
-			if (collisionShape.overlaps(iter.next())) {
+			if (collisionShape.overlaps(iter.next().collisionShape)) {
 				collisionShape.move(-x, -y);
 				return false;
 			}
@@ -302,8 +264,7 @@ public abstract class Shape {
 	}
 
 	public void updateCollisionShapeList(World world) {
-		nearShapes = world.getNearCollision(this.getRoughBounds());
-		nearShapes.remove(collisionShape);
+		nearShapes = world.getNearShapes(this.getRoughBounds());
 	}
 
 	private void moveWithoutCollision(float x, float y) {
@@ -311,9 +272,10 @@ public abstract class Shape {
 		position[0] += x;
 		position[1] += y;
 	}
-	
+
 	public void rotate(float degree) {
 		Matrix.rotateM(modelMatrix, 0, degree, 0, 0, 1);
 	}
 
+	public abstract String toString();
 }

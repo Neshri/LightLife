@@ -1,6 +1,5 @@
 package game.first.props;
 
-import game.first.lighting.LightSource;
 import game.first.lighting.PointLight;
 import game.first.physics.CollisionBox;
 
@@ -10,9 +9,6 @@ import java.nio.ShortBuffer;
 import java.util.List;
 
 import android.opengl.GLES20;
-import android.opengl.Matrix;
-
-import util.InvalidFormatException;
 
 public class Rectangle extends Shape {
 
@@ -72,6 +68,11 @@ public class Rectangle extends Shape {
 
 		// Disable vertex array
 		GLES20.glDisableVertexAttribArray(positionHandle);
+	}
+
+	@Override
+	public String toString() {
+		return "Rectangle: " + position[0] + ", " + position[1];
 	}
 
 }

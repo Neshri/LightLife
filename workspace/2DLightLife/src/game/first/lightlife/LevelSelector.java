@@ -2,7 +2,9 @@ package game.first.lightlife;
 
 import game.first.levels.FirstLevel;
 import game.first.levels.Level;
+import game.first.levels.SecondLevel;
 import game.first.levels.TestLevel;
+import game.first.levels.ThirdLevel;
 import game.first.mechanics.Objective;
 import game.first.pawn.Player;
 
@@ -19,14 +21,18 @@ public class LevelSelector {
 	public LevelSelector() {
 		levels = new HashMap<String, Level>();
 		levelOrder = new ArrayList<String>();
-		levels.put("TestLevel", new TestLevel());
-		levelOrder.add("TestLevel");
-		levels.put("FirstLevel", new FirstLevel());
-		levelOrder.add("FirstLevel");
+		addLevel("TestLevel", new TestLevel());
+		addLevel("FirstLevel", new FirstLevel());
+		addLevel("SecondLevel", new SecondLevel());
+		addLevel("ThirdLevel", new ThirdLevel());
+
 	}
-	
-	
-	
+
+	private void addLevel(String name, Level level) {
+		levels.put(name, level);
+		levelOrder.add(name);
+	}
+
 	public void stopLevel() {
 		if (levelRunning == null) {
 			return;
@@ -35,11 +41,11 @@ public class LevelSelector {
 		temp.destroy();
 		levelRunning = null;
 	}
-	
+
 	public Level getLevel(String level) {
 		return levels.get(level);
 	}
-	
+
 	public int getLevelSong() {
 		if (levelRunning == null) {
 			return R.raw.and_the_faded_notes_play;
@@ -57,11 +63,11 @@ public class LevelSelector {
 	public String getLastPlayed() {
 		return levelRunning;
 	}
-	
+
 	public Objective getCurrentObjective() {
 		return currentObjective;
 	}
-	
+
 	public Player loadNextLevel() {
 		if (levelRunning == null) {
 			return null;
@@ -74,14 +80,15 @@ public class LevelSelector {
 			}
 		}
 		stopLevel();
+		if (next == levelOrder.size()) {
+			return null;
+		}
 		Level temp = levels.get(levelOrder.get(next));
 		Player player = temp.load();
 		currentObjective = temp.getObjective();
 		levelRunning = levelOrder.get(next);
 		return player;
 	}
-	
-	
 
 	/**
 	 * Loads the requested level and returns the player for the level, if no

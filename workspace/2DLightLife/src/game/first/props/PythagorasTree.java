@@ -1,6 +1,5 @@
 package game.first.props;
 
-import game.first.lighting.LightSource;
 import game.first.lighting.PointLight;
 import game.first.math.FloatPoint;
 
@@ -178,6 +177,11 @@ public class PythagorasTree extends Shape {
 		// Disable vertex array
 		GLES20.glDisableVertexAttribArray(positionHandle);
 
+	}
+	
+	@Override
+	public String toString() {
+		return "Pythagoras Tree: " + iterations + ", " + rotationDegree;
 	}
 
 }

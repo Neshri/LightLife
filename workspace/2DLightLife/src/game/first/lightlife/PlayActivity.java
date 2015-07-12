@@ -181,7 +181,7 @@ public class PlayActivity extends Activity {
 		size = new Point();
 		display.getSize(size);
 		String lastPlayed = getSharedPreferences(SAVE_DATA, 0).getString(
-				"lastPlayed", "TestLevel");
+				"lastPlayed", "FirstLevel");
 		player = levels.loadLevel(lastPlayed);
 		setPlayView();
 	}
@@ -212,13 +212,27 @@ public class PlayActivity extends Activity {
 		LevelEndedDialog end = new LevelEndedDialog(this);
 		end.show(getFragmentManager(), "End");
 	}
-	
+
+	public void startLevel(String level) {
+		display = getWindowManager().getDefaultDisplay();
+		size = new Point();
+		display.getSize(size);
+		player = levels.loadLevel(level);
+		if (player != null) {
+			setPlayView();
+		}
+	}
+
 	public void startNextLevel() {
 		display = getWindowManager().getDefaultDisplay();
 		size = new Point();
 		display.getSize(size);
 		player = levels.loadNextLevel();
-		setPlayView();
+		if (player == null) {
+			mainMenu();
+		} else {
+			setPlayView();
+		}
 	}
 
 	public void pauseCurrent() {
@@ -311,6 +325,7 @@ public class PlayActivity extends Activity {
 		this.addContentView((View) textPrompt, new ViewGroup.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT));
+		textPrompt.setPadding(50, 0, 50, 0);
 		textPrompt.setGravity(android.view.Gravity.CENTER);
 		textPrompt.setVisibility(View.VISIBLE);
 	}

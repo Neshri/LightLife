@@ -2,7 +2,6 @@ package util;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
 
 public class MusicPlayer extends CustomMediaPlayer {
 

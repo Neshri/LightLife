@@ -1,14 +1,12 @@
 package game.first.pawn;
 
-import game.first.lighting.LightSource;
+import android.util.Log;
 import game.first.lighting.PointLight;
 import game.first.math.FloatPoint;
 import game.first.mechanics.LightPulse;
-import game.first.props.Rectangle;
 import game.first.props.Shape;
 import game.first.props.SymmetricPolygon;
 import game.first.world.World;
-import util.InvalidFormatException;
 
 public class Follower implements Pawn {
 
@@ -20,29 +18,19 @@ public class Follower implements Pawn {
 	private Pawn target;
 	private float speed;
 
-	public Follower(float x, float y, Pawn target, World world) {
+	public Follower(float x, float y, float[] color, Pawn target, World world) {
 		vPosition = new FloatPoint(x, y);
 		speed = 0;
 		this.target = target;
 		world.addPawn(this);
 		vDirection = new FloatPoint(0, 0);
-		float[] color = { 0.4f, 1.0f, 0.4f, 1.0f };
 		// Creates the Player model
-		try {
-			model = new SymmetricPolygon(5, 0.03f, color, x, y, 2, true, false);
-			world.createDynamic(model);
-		} catch (InvalidFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//model = new Rectangle(0.06f, 0.06f, color, x, y, 2, true);
-		// playerModel.setShaders(vertexShaderCode, fragmentShaderCode);
-		
-		
+		model = new SymmetricPolygon(5, 0.08f, color, x, y, 2, true, false);
+		world.createDynamic(model);
+
 		lightAura = new PointLight(x, y, 2f, color, 0.3f);
 		world.addPointLight(lightAura);
 		lightBreath = new LightPulse(lightAura, 0.05f, 1);
-		
 	}
 
 	@Override
@@ -71,8 +59,9 @@ public class Follower implements Pawn {
 				return;
 			}
 		}
-
-		vPosition = vPosition.add(vDirection);
+		
+		// vPosition = vPosition.add(vDirection);
+		vPosition = new FloatPoint(model.position[0], model.position[1]);
 		lightAura.setPos(vPosition.getX(), vPosition.getY(), 2);
 	}
 

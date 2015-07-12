@@ -3,6 +3,7 @@ package game.first.mechanics;
 import game.first.lighting.PointLight;
 import game.first.math.FloatPoint;
 import game.first.physics.Bullet;
+import game.first.props.Shape;
 import game.first.world.World;
 
 public class DestructionLight {
@@ -10,11 +11,13 @@ public class DestructionLight {
 	private World world;
 	private float strength;
 	private final float[] color = { 1f, 1.0f, 1.0f, 1f };
-	private static final float MAX_STRENGTH = 2.0f;
+	//private static final float MAX_STRENGTH = 2.0f;
 	private long lastShot;
+	private Shape owner;
 
-	public DestructionLight(World world) {
+	public DestructionLight(World world, Shape owner) {
 		this.world = world;
+		this.owner = owner;
 		strength = 0.25f;
 		lastShot = System.currentTimeMillis();
 	}
@@ -27,7 +30,7 @@ public class DestructionLight {
 			return;
 		}
 		FloatPoint speed = direction.div(25);
-		new Bullet(position, speed, world, strength,
+		new Bullet(position, speed, world, owner, strength,
 				new PointLight(position.getX(), position.getY(), 2.5f, color, 0.7f));
 		lastShot = System.currentTimeMillis();
 	}

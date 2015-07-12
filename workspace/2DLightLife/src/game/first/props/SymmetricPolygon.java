@@ -1,6 +1,5 @@
 package game.first.props;
 
-import game.first.lighting.LightSource;
 import game.first.lighting.PointLight;
 import game.first.physics.CollisionSymmetricPolygon;
 
@@ -10,8 +9,6 @@ import java.nio.ShortBuffer;
 import java.util.List;
 
 import android.opengl.GLES20;
-import android.opengl.Matrix;
-import util.InvalidFormatException;
 
 public class SymmetricPolygon extends Shape {
 
@@ -32,32 +29,28 @@ public class SymmetricPolygon extends Shape {
 	 *            if true the shape will calculate possible collisions
 	 */
 	public SymmetricPolygon(int corners, float maxRadius, float[] color,
-			float x, float y, float z, boolean collision, boolean destructible)
-			throws InvalidFormatException {
+			float x, float y, float z, boolean collision, boolean destructible) {
 		super(x, y, z, color, destructible);
 		if (corners < 3) {
-			throw new InvalidFormatException(
-					"Need at least 3 corners in a polygon");
-		} else {
-			float[] points = createVertices(corners, maxRadius);
-			super.installVertices(points);
-			if (collision) {
-				float[] collisionPoints = new float[corners * 2];
-				for (int i = 0; i < corners; i++) {
-					collisionPoints[i * 2] = points[i * 3];
-					collisionPoints[i * 2 + 1] = points[i * 3 + 1];
-				}
-				addCollision(new CollisionSymmetricPolygon(collisionPoints,
-						(int) z));
-			}
-			ByteBuffer dlb = ByteBuffer.allocateDirect(
-			// (# of coordinate values * 2 bytes per short)
-					drawOrder.length * 2);
-			dlb.order(ByteOrder.nativeOrder());
-			drawListBuffer = dlb.asShortBuffer();
-			drawListBuffer.put(drawOrder);
-			drawListBuffer.position(0);
+			corners = 3;
 		}
+		float[] points = createVertices(corners, maxRadius);
+		super.installVertices(points);
+		if (collision) {
+			float[] collisionPoints = new float[corners * 2];
+			for (int i = 0; i < corners; i++) {
+				collisionPoints[i * 2] = points[i * 3];
+				collisionPoints[i * 2 + 1] = points[i * 3 + 1];
+			}
+			addCollision(new CollisionSymmetricPolygon(collisionPoints, (int) z));
+		}
+		ByteBuffer dlb = ByteBuffer.allocateDirect(
+		// (# of coordinate values * 2 bytes per short)
+				drawOrder.length * 2);
+		dlb.order(ByteOrder.nativeOrder());
+		drawListBuffer = dlb.asShortBuffer();
+		drawListBuffer.put(drawOrder);
+		drawListBuffer.position(0);
 
 		// TODO Auto-generated constructor stub
 	}
@@ -104,42 +97,9 @@ public class SymmetricPolygon extends Shape {
 
 	}
 
-	// public void drawSimple(float[] vMatrix, float[] pMatrix) {
-	// // Add program to OpenGL ES environment
-	// GLES20.glUseProgram(shaderProgram);
-	//
-	// // get handle to vertex shader's vPosition member
-	// positionHandle = GLES20.glGetAttribLocation(shaderProgram, "vPosition");
-	//
-	// // Enable a handle to the triangle vertices
-	// GLES20.glEnableVertexAttribArray(positionHandle);
-	//
-	// // Prepare the triangle coordinate data
-	// GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
-	// GLES20.GL_FLOAT, false, 12, super.vertexBuffer);
-	//
-	// // get handle to fragment shader's vColor member
-	// colorHandle = GLES20.glGetUniformLocation(shaderProgram, "vColor");
-	//
-	// // Set color for drawing the triangle
-	// GLES20.glUniform4fv(colorHandle, 1, color, 0);
-	//
-	// // get handle to shape's transformation matrix
-	// mMVPMatrixHandle = GLES20.glGetUniformLocation(shaderProgram,
-	// "uMVPMatrix");
-	//
-	// float[] inputMatrix = new float[16];
-	// Matrix.multiplyMM(inputMatrix, 0, pMatrix, 0, vMatrix, 0);
-	// Matrix.multiplyMM(inputMatrix, 0, inputMatrix, 0, modelMatrix, 0);
-	//
-	// // Apply the projection and view transformation
-	// GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, inputMatrix, 0);
-	// // Draw the shape
-	// GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length,
-	// GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
-	//
-	// // Disable vertex array
-	// GLES20.glDisableVertexAttribArray(positionHandle);
-	// }
+	@Override
+	public String toString() {
+		return "Symmetric Polygon: " + position[0] + ", " + position[1];
+	}
 
 }

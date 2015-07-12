@@ -1,13 +1,11 @@
 package game.first.props;
 
-import java.util.List;
-
-import game.first.lighting.LightSource;
 import game.first.lighting.PointLight;
 import game.first.physics.CollisionTriangle;
-import util.InvalidFormatException;
+
+import java.util.List;
+
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 
 public class Triangle extends Shape {
 
@@ -55,6 +53,11 @@ public class Triangle extends Shape {
 		// Disable vertex array
 		GLES20.glDisableVertexAttribArray(super.positionHandle);
 
+	}
+
+	@Override
+	public String toString() {
+		return "Triangle: " + position[0] + ", " + position[1];
 	}
 
 }
