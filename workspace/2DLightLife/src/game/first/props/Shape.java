@@ -33,7 +33,7 @@ public abstract class Shape {
 			+ "gl_Position = u_MVPMatrix * a_Position;" + "}";
 
 	protected static final String standardFragmentShaderCode = "precision lowp float;"
-			// Max 5 pointLights
+			// Max 10 pointLights
 			+ "uniform vec4 u_PointLight[20];"
 			+ "varying vec3 v_Position;"
 			+ "uniform vec4 vColor;"
@@ -62,18 +62,28 @@ public abstract class Shape {
 			+ "lightColor.z = lightColor.z * vColor.z;"
 			+ "lightColor.w = vColor.w;" + "gl_FragColor = lightColor;" + "}";
 
+	// memory
 	public int id;
 	public char type;
+
+	// draw variables
 	public static final int COORDS_PER_VERTEX = 3;
-	public float[] position = new float[3];
 	protected FloatBuffer vertexBuffer;
 	protected final float[] modelMatrix = new float[16];
-	protected int shaderProgram, positionHandle;
-	public CollisionShape collisionShape;
-	private List<Shape> nearShapes;
+	public int shaderProgram;
+	protected int positionHandle;
 	private int mMVPMatrixHandle, mMMatrixHandle, colorHandle;
 	private float[] color = new float[4];
 	protected String vertexShaderCode, fragmentShaderCode;
+
+	// collision variables
+	private FloatPoint directionVector;
+	private boolean pushable = true;
+
+	public float[] position = new float[3];
+	public CollisionShape collisionShape;
+	private List<Shape> nearShapes;
+	public Shape lastCollision;
 	private boolean destructible;
 
 	public Shape(float x, float y, float z, float[] color, boolean destructible) {
@@ -85,6 +95,13 @@ public abstract class Shape {
 			this.color[i] = color[i];
 		}
 		Matrix.setIdentityM(modelMatrix, 0);
+		directionVector = new FloatPoint(0, 0);
+	}
+
+	public void getModelMatrix(float[] matrix) {
+		for (int i = 0; i < matrix.length; i++) {
+			matrix[i] = modelMatrix[i];
+		}
 	}
 
 	public void setAlpha(float alpha) {
@@ -98,6 +115,14 @@ public abstract class Shape {
 
 	public float getAlpha() {
 		return color[3];
+	}
+
+	public float[] getColor() {
+		float[] send = new float[4];
+		for (int i = 0; i < 4; i++) {
+			send[i] = color[i];
+		}
+		return send;
 	}
 
 	public boolean isDestructible() {
@@ -127,8 +152,20 @@ public abstract class Shape {
 
 	}
 
-	public void draw(float[] vMatrix, float[] pMatrix,
+	/**
+	 * 
+	 * @param vMatrix
+	 * @param pMatrix
+	 * @param mMatrix
+	 *            leave as null unless it's a slave
+	 * @param pointLights
+	 */
+	public void draw(float[] vMatrix, float[] pMatrix, float[] mMatrix,
 			List<PointLight> pointLights) {
+
+		if (mMatrix == null) {
+			mMatrix = modelMatrix;
+		}
 		// Add program to OpenGL ES environment
 		GLES20.glUseProgram(shaderProgram);
 
@@ -145,13 +182,13 @@ public abstract class Shape {
 		// Log.d("Graphics", "" + vertexBuffer.capacity());
 		mMMatrixHandle = GLES20
 				.glGetUniformLocation(shaderProgram, "u_MMatrix");
-		GLES20.glUniformMatrix4fv(mMMatrixHandle, 1, false, modelMatrix, 0);
+		GLES20.glUniformMatrix4fv(mMMatrixHandle, 1, false, mMatrix, 0);
 		// get handle to shape's transformation matrix
 		mMVPMatrixHandle = GLES20.glGetUniformLocation(shaderProgram,
 				"u_MVPMatrix");
 		float[] mvpMatrix = new float[16];
 		Matrix.multiplyMM(mvpMatrix, 0, pMatrix, 0, vMatrix, 0);
-		Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, modelMatrix, 0);
+		Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, mMatrix, 0);
 		// Apply the projection and view transformation
 		GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
 		// Log.d("Graphics", "first" + lights.size());
@@ -185,8 +222,13 @@ public abstract class Shape {
 
 	}
 
+	public void giveShaderProgram(int program) {
+		shaderProgram = program;
+	}
+
 	public void installGraphics(String vertexShaderCode,
 			String fragmentShaderCode) {
+
 		int vertexShader = GLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
 				vertexShaderCode);
 
@@ -233,12 +275,18 @@ public abstract class Shape {
 			moveWithoutCollision(x, y);
 			return send;
 		}
+		if (x == 0 && y == 0) {
+			directionVector = new FloatPoint(0, 0);
+			return null;
+		}
 		Iterator<Shape> iter = nearShapes.iterator();
 		collisionShape.move(x, y);
 		while (iter.hasNext()) {
-			if (collisionShape.overlaps(iter.next().collisionShape)) {
+			Shape test = iter.next();
+			if (collisionShape.overlaps(test.collisionShape)) {
 				collisionShape.move(-x, -y);
 				send = collisionShape.getLastMTV();
+				lastCollision = test;
 				return send;
 			}
 		}
@@ -251,11 +299,17 @@ public abstract class Shape {
 			moveWithoutCollision(x, y);
 			return true;
 		}
+		if (x == 0 && y == 0) {
+			directionVector = new FloatPoint(0, 0);
+			return true;
+		}
 		Iterator<Shape> iter = nearShapes.iterator();
 		collisionShape.move(x, y);
 		while (iter.hasNext()) {
-			if (collisionShape.overlaps(iter.next().collisionShape)) {
+			Shape test = iter.next();
+			if (collisionShape.overlaps(test.collisionShape)) {
 				collisionShape.move(-x, -y);
+				lastCollision = test;
 				return false;
 			}
 		}
@@ -271,8 +325,46 @@ public abstract class Shape {
 		Matrix.translateM(modelMatrix, 0, x, y, 0);
 		position[0] += x;
 		position[1] += y;
+		directionVector = new FloatPoint(x, y);
 	}
 
+	public void setPushable(boolean pushable) {
+		this.pushable = pushable;
+	}
+
+	public FloatPoint push(float x, float y, float pushMass) {
+		if (type == 'S' || !pushable) {
+			return new FloatPoint(0, 0);
+		}
+
+		float strength = pushMass / (collisionShape.mass + pushMass);
+		
+
+		FloatPoint result = new FloatPoint(x, y);
+		result = result.mult(strength);
+		if (move(result.getX(), result.getY())) {
+			return new FloatPoint(result.getX(), result.getY());
+		}
+		return new FloatPoint(0, 0);
+	}
+
+	public FloatPoint getForce() {
+		FloatPoint send;
+		if (directionVector.getX() == 0 && directionVector.getY() == 0) {
+			return null;
+		} else {
+			send = new FloatPoint(directionVector.getX(),
+					directionVector.getY());
+			send = send.mult(collisionShape.mass);
+			return send;
+		}
+	}
+
+	/**
+	 * Not finished!
+	 * 
+	 * @param degree
+	 */
 	public void rotate(float degree) {
 		Matrix.rotateM(modelMatrix, 0, degree, 0, 0, 1);
 	}

@@ -3,6 +3,7 @@ package game.first.physics;
 import game.first.math.FloatPoint;
 
 public abstract class CollisionShape {
+	public float mass;
 	public float[] roughBounds;
 	public FloatPoint[] axes;
 	public FloatPoint[] vertices;

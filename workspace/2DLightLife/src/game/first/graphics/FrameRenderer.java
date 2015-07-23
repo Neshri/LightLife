@@ -25,6 +25,7 @@ public class FrameRenderer extends GLRenderer implements Observer {
 	private World world;
 	private HashSet<Integer> needUpdate;
 	private int[] updateArray;
+	private int standardShaderProgram;
 
 	public FrameRenderer(Player player) {
 		super();
@@ -55,16 +56,25 @@ public class FrameRenderer extends GLRenderer implements Observer {
 	@Override
 	public void createShapes() {
 		Iterator<Shape> iter = staticShapes.iterator();
-		while (iter.hasNext()) {
-			Shape shape = iter.next();
+		Shape shape;
+		if (iter.hasNext()) {
+			shape = iter.next();
 			String[] shaders = shape.getShaders();
 			shape.installGraphics(shaders[0], shaders[1]);
+			standardShaderProgram = shape.shaderProgram;
+		}
+		while (iter.hasNext()) {
+			shape = iter.next();
+//			String[] shaders = shape.getShaders();
+//			shape.installGraphics(shaders[0], shaders[1]);
+			shape.giveShaderProgram(standardShaderProgram);
 		}
 		iter = dynamicShapes.iterator();
 		while (iter.hasNext()) {
-			Shape shape = iter.next();
-			String[] shaders = shape.getShaders();
-			shape.installGraphics(shaders[0], shaders[1]);
+			shape = iter.next();
+//			String[] shaders = shape.getShaders();
+//			shape.installGraphics(shaders[0], shaders[1]);
+			shape.giveShaderProgram(standardShaderProgram);
 		}
 	}
 
@@ -73,10 +83,10 @@ public class FrameRenderer extends GLRenderer implements Observer {
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
 		for (Shape a : staticShapes) {
-			a.draw(camera.mViewMatrix, mProjectionMatrix, pointLights);
+			a.draw(camera.mViewMatrix, mProjectionMatrix, null, pointLights);
 		}
 		for (Shape a : dynamicShapes) {
-			a.draw(camera.mViewMatrix, mProjectionMatrix, pointLights);
+			a.draw(camera.mViewMatrix, mProjectionMatrix, null, pointLights);
 		}
 
 		synchronized (needUpdate) {
@@ -127,8 +137,9 @@ public class FrameRenderer extends GLRenderer implements Observer {
 		Iterator<Shape> iter = staticShapes.iterator();
 		while (iter.hasNext()) {
 			Shape shape = iter.next();
-			String[] shaders = shape.getShaders();
-			shape.installGraphics(shaders[0], shaders[1]);
+//			String[] shaders = shape.getShaders();
+//			shape.installGraphics(shaders[0], shaders[1]);
+			shape.giveShaderProgram(standardShaderProgram);
 		}
 	}
 
@@ -136,8 +147,9 @@ public class FrameRenderer extends GLRenderer implements Observer {
 		Iterator<Shape> iter = dynamicShapes.iterator();
 		while (iter.hasNext()) {
 			Shape shape = iter.next();
-			String[] shaders = shape.getShaders();
-			shape.installGraphics(shaders[0], shaders[1]);
+//			String[] shaders = shape.getShaders();
+//			shape.installGraphics(shaders[0], shaders[1]);
+			shape.giveShaderProgram(standardShaderProgram);
 		}
 	}
 }

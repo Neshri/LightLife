@@ -44,9 +44,9 @@ public class Triangle extends Shape {
 	}
 
 	@Override
-	public void draw(float[] vMatrix, float[] pMatrix,
+	public void draw(float[] vMatrix, float[] pMatrix, float[] mMatrix,
 			List<PointLight> pointLights) {
-		super.draw(vMatrix, pMatrix, pointLights);
+		super.draw(vMatrix, pMatrix, mMatrix, pointLights);
 		// Draw the triangle
 		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
 

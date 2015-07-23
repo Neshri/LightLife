@@ -32,22 +32,37 @@ public class CollisionSymmetricPolygon extends CollisionShape {
 		super.vertices = vertices;
 		super.axes = getAxes();
 		super.z = z;
+		float perimeter = vertices[0].distance(vertices[1]);
+		perimeter = perimeter * vertices.length;
+		float midX = 0;
+		float midY = 0;
+		for (int i = 0; i < vertices.length; i++) {
+			midX += vertices[i].getX();
+			midY += vertices[i].getY();
+		}
+		midX = midX / vertices.length;
+		midY = midY / vertices.length;
+		float lineX = (vertices[0].getX() + vertices[1].getX()) / 2;
+		float lineY = (vertices[0].getY() + vertices[1].getY()) / 2;
+		float apothem = new FloatPoint(midX, midY).distance(new FloatPoint(
+				lineX, lineY));
+		
+		mass = apothem * perimeter / 2;
 	}
 
 	private FloatPoint[] getAxes() {
 		FloatPoint[] axes = new FloatPoint[vertices.length];
-		
+
 		FloatPoint edge;
 		for (int i = 0; i < vertices.length - 1; i++) {
-			edge = vertices[i].sub(vertices[i+1]);
+			edge = vertices[i].sub(vertices[i + 1]);
 			axes[i] = new FloatPoint(-edge.getY(), edge.getX());
 			axes[i].normalize();
 		}
-		edge = vertices[vertices.length-1].sub(vertices[0]);
-		axes[axes.length-1] = new FloatPoint(-edge.getY(), edge.getX());
-		axes[axes.length-1].normalize();
-		
-		
+		edge = vertices[vertices.length - 1].sub(vertices[0]);
+		axes[axes.length - 1] = new FloatPoint(-edge.getY(), edge.getX());
+		axes[axes.length - 1].normalize();
+
 		return axes;
 	}
 

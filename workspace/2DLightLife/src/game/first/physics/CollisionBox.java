@@ -14,10 +14,12 @@ public class CollisionBox extends CollisionShape {
 		super.z = z;
 		FloatPoint[] vertices = new FloatPoint[points.length / 2];
 		for (int i = 0; i < points.length / 2; i++) {
-			vertices[i] = new FloatPoint(points[i*2], points[i*2 + 1]);
+			vertices[i] = new FloatPoint(points[i * 2], points[i * 2 + 1]);
 		}
 		super.vertices = vertices;
 		super.axes = getAxes();
+		mass = (roughBounds[2] - roughBounds[0])
+				* (roughBounds[3] - roughBounds[1]);
 	}
 
 	private FloatPoint[] getAxes() {

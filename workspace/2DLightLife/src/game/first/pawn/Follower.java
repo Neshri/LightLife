@@ -47,18 +47,19 @@ public class Follower implements Pawn {
 		}
 		targetPos.normalize();
 		vDirection = targetPos.mult(speed);
-		model.updateCollisionShapeList(world);
-		targetPos = model.moveGetMTV(vDirection.getX(), vDirection.getY());
-		if (targetPos != null) {
-			targetPos = new FloatPoint(targetPos.getY(), -targetPos.getX());
-			float mult = targetPos.dot(vDirection);
-			targetPos = targetPos.mult(mult);
-			if (model.move(targetPos.getX(), targetPos.getY())) {
-				vDirection = targetPos;
-			} else {
-				return;
-			}
-		}
+		BasicMovement.movePushSlide(model, world, vDirection);
+//		model.updateCollisionShapeList(world);
+//		targetPos = model.moveGetMTV(vDirection.getX(), vDirection.getY());
+//		if (targetPos != null) {
+//			targetPos = new FloatPoint(targetPos.getY(), -targetPos.getX());
+//			float mult = targetPos.dot(vDirection);
+//			targetPos = targetPos.mult(mult);
+//			if (model.move(targetPos.getX(), targetPos.getY())) {
+//				vDirection = targetPos;
+//			} else {
+//				return;
+//			}
+//		}
 		
 		// vPosition = vPosition.add(vDirection);
 		vPosition = new FloatPoint(model.position[0], model.position[1]);

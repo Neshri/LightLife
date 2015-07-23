@@ -43,7 +43,7 @@ public class Player extends Observable implements Pawn {
 
 		// Creates the Player model
 		playerModel = new SymmetricPolygon(8, 0.1f, color, x, y, 2, true, false);
-		
+		playerModel.collisionShape.mass = playerModel.collisionShape.mass * 10;
 		world.createDynamic(playerModel);
 
 		lightAura = new PointLight(x, y, 2f, color, 0.9f);
@@ -76,28 +76,34 @@ public class Player extends Observable implements Pawn {
 			vDirection[1] = maxCalc.getY();
 		}
 		lightBreath.update();
-		playerModel.updateCollisionShapeList(world);
-		FloatPoint normalVector = playerModel.moveGetMTV(vDirection[0],
-				vDirection[1]);
-		if (normalVector != null) {
-			FloatPoint slide = new FloatPoint(normalVector.getY(),
-					-normalVector.getX());
-			float multiplier = slide.dot(new FloatPoint(vDirection[0],
-					vDirection[1]));
-			slide = slide.mult(multiplier);
+		// playerModel.updateCollisionShapeList(world);
+		// FloatPoint normalVector = playerModel.moveGetMTV(vDirection[0],
+		// vDirection[1]);
+		// if (normalVector != null) {
+		// FloatPoint slide = new FloatPoint(normalVector.getY(),
+		// -normalVector.getX());
+		// float multiplier = slide.dot(new FloatPoint(vDirection[0],
+		// vDirection[1]));
+		// slide = slide.mult(multiplier);
+		//
+		// vDirection[0] = slide.getX();
+		// vDirection[1] = slide.getY();
+		// if (!playerModel.move(vDirection[0], vDirection[1])) {
+		// vDirection[0] = 0;
+		// vDirection[1] = 0;
+		// return;
+		// }
+		//
+		// }
+		FloatPoint moved = BasicMovement.movePushSlide(playerModel, world,
+				new FloatPoint(vDirection[0], vDirection[1]));
+		vDirection[0] = moved.getX();
+		vDirection[1] = moved.getY();
 
-			vDirection[0] = slide.getX();
-			vDirection[1] = slide.getY();
-			if (!playerModel.move(vDirection[0], vDirection[1])) {
-				vDirection[0] = 0;
-				vDirection[1] = 0;
-				return;
-			}
-
-		}
-
-		vPosition[0] += vDirection[0];
-		vPosition[1] += vDirection[1];
+		vPosition[0] = playerModel.position[0];
+		vPosition[1] = playerModel.position[1];
+		// vPosition[0] += vDirection[0];
+		// vPosition[1] += vDirection[1];
 
 		vDirection[0] = vDirection[0] / SLOWDOWNSPEED;
 		vDirection[1] = vDirection[1] / SLOWDOWNSPEED;

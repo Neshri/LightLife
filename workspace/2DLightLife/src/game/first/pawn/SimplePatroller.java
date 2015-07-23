@@ -9,24 +9,21 @@ public class SimplePatroller implements Pawn {
 
 	private Shape shape;
 	private float speed;
-	private float[] position = new float[2];
-	private FloatPoint direction;
-	private float currDist;
-	private float length;
+	private FloatPoint position;
+	private FloatPoint a, b, target;
+	private long lastTargetChange;
 
 	public SimplePatroller(World world, Shape shape, FloatPoint a,
 			FloatPoint b, float speed) {
 		world.createDynamic(shape);
 		world.addPawn(this);
 		this.shape = shape;
-
+		lastTargetChange = System.currentTimeMillis();
 		this.speed = speed;
-		position[0] = shape.position[0];
-		position[1] = shape.position[1];
-		length = a.distance(b);
-		direction = b.sub(a);
-		direction.normalize();
-		direction = direction.mult(speed);	
+		position = new FloatPoint(shape.position[0], shape.position[1]);
+		target = b;
+		this.a = a;
+		this.b = b;
 	}
 
 	@Override
@@ -35,20 +32,28 @@ public class SimplePatroller implements Pawn {
 			world.removePawn(this);
 			world.destroyDynamic(shape.id);
 		}
-		
-		shape.updateCollisionShapeList(world);
-		if (shape.move(direction.getX(), direction.getY())) {
-			position[0] = shape.position[0];
-			position[1] = shape.position[1];
-		} else {
-			direction = direction.mult(-1);
+		if (System.currentTimeMillis() - lastTargetChange > 1000) {
+			if (position.distance(target) < 0.5f) {
+				lastTargetChange = System.currentTimeMillis();
+				if (target.equals(a)) {
+					target = b;
+				} else {
+					target = a;
+				}
+			}
 		}
+		
+		FloatPoint dir = target.sub(position);
+		dir.normalize();
+		dir = dir.mult(speed);
+		BasicMovement.movePushSlide(shape, world, dir);
+		position = new FloatPoint(shape.position[0], shape.position[1]);
 
 	}
 
 	@Override
 	public FloatPoint getPosition() {
-		return new FloatPoint(position[0], position[1]);
+		return new FloatPoint(position.getX(), position.getY());
 	}
 
 	@Override

@@ -31,10 +31,12 @@ public class CollisionTriangle extends CollisionShape {
 		super.vertices = vertices;
 		super.axes = getAxes();
 		super.z = z;
-
+		mass = vertices[0].distance(vertices[1]);
+		float midX = (vertices[0].getX() + vertices[1].getX()) / 2;
+		float midY = (vertices[0].getY() + vertices[1].getY()) / 2;
+		mass = mass * vertices[2].distance(new FloatPoint(midX, midY));
 	}
 
-	
 	private FloatPoint[] getAxes() {
 		float[] axes = new float[6];
 		FloatPoint edge = vertices[0].sub(vertices[1]);

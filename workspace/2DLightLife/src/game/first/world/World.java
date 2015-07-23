@@ -28,7 +28,7 @@ public class World extends Observable {
 	@SuppressWarnings("unused")
 	private int nbrObjects, nbrStatic, nbrDynamic;
 	private SortedIntegerMap orderOfDraw;
-	private LinkedList<PointLight> pointLights;
+	private ArrayList<PointLight> pointLights;
 	private LinkedList<Pawn> pawns;
 
 	public World(int statNbrObj, int dynNbrObj) {
@@ -42,7 +42,7 @@ public class World extends Observable {
 		nbrStatic = 0;
 		staticNearList = new PointNearList();
 		orderOfDraw = new SortedIntegerMap();
-		pointLights = new LinkedList<PointLight>();
+		pointLights = new ArrayList<PointLight>(10);
 
 	}
 	
@@ -63,18 +63,22 @@ public class World extends Observable {
 	}
 
 	public void removePointLight(PointLight light) {
-		Log.d("Graphics", "" + pointLights.remove(light));
-		//pointLights.remove(light);
+		pointLights.remove(light);
 		notifyObs(POINT_LIGHT);
 	}
 	
 
 	public List<PointLight> getPointLights() {
 		ArrayList<PointLight> send = new ArrayList<PointLight>(pointLights.size());
-		Iterator<PointLight> iter = pointLights.iterator();
-		while (iter.hasNext()) {
-			send.add(iter.next());
+		//Iterator<PointLight> iter = pointLights.iterator();
+		for (int i = 0; i < pointLights.size(); i++) {
+			if (pointLights.get(i) != null) {
+				send.add(pointLights.get(i));
+			}
 		}
+//		while (iter.hasNext()) {
+//			send.add(iter.next());
+//		}
 		return send;
 	}
 
@@ -109,6 +113,9 @@ public class World extends Observable {
 	}
 
 	public void createStatic(Shape shape) {
+		if (shape == null) {
+			return;
+		}
 		shape.id = staticFree.getFreeId();
 		shape.type = 'S';
 		staticObjects[shape.id] = shape;
@@ -152,6 +159,9 @@ public class World extends Observable {
 	}
 
 	public void createDynamic(Shape shape) {
+		if (shape == null) {
+			return;
+		}
 		shape.id = dynamicFree.getFreeId();
 		shape.type = 'D';
 		dynamicObjects[shape.id] = shape;
@@ -201,7 +211,9 @@ public class World extends Observable {
 		List<Node> order = orderOfDraw.getSorted();
 		for (Node i : order) {
 			if (i.getType() == 'D') {
-				shapes.add(dynamicObjects[i.getId()]);
+				if (dynamicObjects[i.getId()] != null) {
+					shapes.add(dynamicObjects[i.getId()]);
+				}
 			}
 		}
 		return shapes;

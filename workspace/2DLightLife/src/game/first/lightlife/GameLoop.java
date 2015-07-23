@@ -14,6 +14,7 @@ public class GameLoop extends Thread {
 	private Controller control;
 	private float[] controlVals;
 	private Objective objective;
+	private long sleepTime;
 	
 	public GameLoop(PlayView view, Player player) {
 		this.view = view;
@@ -39,14 +40,19 @@ public class GameLoop extends Thread {
 	@Override
 	public void run() {
 		while(true) {
+			sleepTime = System.currentTimeMillis();
 			world.step();
 			controlVals = view.controlVals;
 			control.update(controlVals[0], controlVals[1], controlVals[2], controlVals[3]);
 			if (objective != null && objective.isCompleted()) {				
 				view.objectiveSuccess();
 			}
+			sleepTime = 10 - (System.currentTimeMillis() - sleepTime);
+			if (sleepTime < 0) {
+				sleepTime = 0;
+			}
 			try {
-				sleep(10);
+				sleep(sleepTime);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

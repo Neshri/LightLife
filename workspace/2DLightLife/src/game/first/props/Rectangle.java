@@ -59,9 +59,9 @@ public class Rectangle extends Shape {
 	}
 
 	@Override
-	public void draw(float[] vMatrix, float[] pMatrix,
+	public void draw(float[] vMatrix, float[] pMatrix, float[] mMatrix,
 			List<PointLight> pointLights) {
-		super.draw(vMatrix, pMatrix, pointLights);
+		super.draw(vMatrix, pMatrix, mMatrix, pointLights);
 
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length,
 				GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
