@@ -14,7 +14,9 @@ public abstract class Level {
 
 	protected static final float[] green = { 0.2f, 1.0f, 0.2f, 1.0f };
 	protected static final float[] darkGreen = { 0.01f, 0.3f, 0.01f, 1.0f };
+	protected static final float[] darkGreenRed = { 0.3f, 0.3f, 0.01f, 1.0f };
 	protected static final float[] red = { 1.0f, 0.2f, 0.2f, 1.0f };
+	protected static final float[] darkRed = { 0.3f, 0.01f, 0.01f, 1.0f };
 	protected static final float[] grey = { 0.5f, 0.5f, 0.5f, 1.0f };
 	protected static final float[] brown = { 0.54f, 0.27f, 0.07f, 1.0f };
 	protected static final float[] black = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -98,7 +100,8 @@ public abstract class Level {
 	 * 
 	 * @param width
 	 * @param height
-	 * @param holeDir (L)eft, (R)ight, (U)p, (D)own
+	 * @param holeDir
+	 *            (L)eft, (R)ight, (U)p, (D)own
 	 * @param x
 	 * @param y
 	 * @param wallWidth
@@ -106,19 +109,53 @@ public abstract class Level {
 	 * @return
 	 */
 	protected List<Shape> createBoxWithHole(float width, float height,
-			char holeDir, float x, float y, float wallWidth, float[] color) {
+			char holeDir, float holeWidth, float x, float y, float wallWidth,
+			float[] color) {
 		if (color == null) {
 			color = green;
 		}
 		LinkedList<Shape> send = new LinkedList<Shape>();
-		send.add(new Rectangle(width + 2 * wallWidth, wallWidth, color, x
-				- wallWidth, y - wallWidth, 2, true, true));
-		send.add(new Rectangle(width + 2 * wallWidth, wallWidth, color, x
-				- wallWidth, y + height, 2, true, true));
-		send.add(new Rectangle(wallWidth, height + wallWidth, color, x
-				- wallWidth, y - wallWidth / 2, 2, true, true));
-		send.add(new Rectangle(wallWidth, height + wallWidth, color, x + width,
-				y - wallWidth / 2, 2, true, true));
+		if (holeDir == 'D') {
+			send.add(new Rectangle((width - holeWidth) / 2 + wallWidth,
+					wallWidth, color, x - wallWidth, y - wallWidth, 2, true,
+					false));
+			send.add(new Rectangle((width - holeWidth) / 2 + wallWidth,
+					wallWidth, color, x + (width + holeWidth) / 2, y
+							- wallWidth, 2, true, false));
+
+		} else {
+			send.add(new Rectangle(width + 2 * wallWidth, wallWidth, color, x
+					- wallWidth, y - wallWidth, 2, true, false));
+		}
+		if (holeDir == 'R') {
+			send.add(new Rectangle(wallWidth, (height - holeWidth) / 2, color,
+					x + width, y, 2, true, false));
+			send.add(new Rectangle(wallWidth, (height - holeWidth) / 2, color,
+					x + width, y + (holeWidth + height) / 2, 2, true, false));
+		} else {
+			send.add(new Rectangle(wallWidth, height + wallWidth, color, x
+					+ width, y - wallWidth / 2, 2, true, false));
+		}
+		if (holeDir == 'U') {
+			send.add(new Rectangle((width - holeWidth) / 2 + wallWidth,
+					wallWidth, color, x - wallWidth, y + height, 2, true, false));
+			send.add(new Rectangle((width - holeWidth) / 2 + wallWidth,
+					wallWidth, color, x + (width + holeWidth) / 2, y + height,
+					2, true, false));
+		} else {
+			send.add(new Rectangle(width + 2 * wallWidth, wallWidth, color, x
+					- wallWidth, y + height, 2, true, false));
+		}
+		if (holeDir == 'L') {
+			send.add(new Rectangle(wallWidth, (height - holeWidth) / 2, color,
+					x - wallWidth, y, 2, true, false));
+			send.add(new Rectangle(wallWidth, (height - holeWidth) / 2, color,
+					x - wallWidth, y + (holeWidth + height) / 2, 2, true, false));
+		} else {
+			send.add(new Rectangle(wallWidth, height + wallWidth, color, x
+					- wallWidth, y - wallWidth / 2, 2, true, false));
+		}
+
 		return send;
 	}
 

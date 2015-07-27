@@ -10,24 +10,30 @@ public class MoveTo implements Pawn {
 	private FloatPoint target;
 	private float speedDivider;
 
+
 	public MoveTo(Shape shape, World world, FloatPoint target,
 			float speedDivider) {
 		this.shape = shape;
 		shape.setPushable(false);
 		this.target = target;
+		this.speedDivider = speedDivider;
 		world.createDynamic(shape);
 		world.addPawn(this);
 	}
 
 	@Override
 	public void step(World world) {
-		FloatPoint moveDir = target.sub(new FloatPoint(shape.position[0],
-				shape.position[1]));
+		FloatPoint moveDir = target.sub(getPosition());
+		float speed = moveDir.getLength();
+
+		if (speed < 0.001f) {
+			return;
+		} else {
+			speed = speed / speedDivider;
+		}
 		moveDir.normalize();
-		float dist = target.distance(new FloatPoint(shape.position[0],
-				shape.position[1]));
-		float speed = dist / speedDivider;
 		BasicMovement.move(shape, world, moveDir.mult(speed));
+
 	}
 
 	@Override

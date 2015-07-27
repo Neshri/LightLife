@@ -24,5 +24,6 @@
     <string name="next_level">Continue</string>
     <string name="level_1_image_button">1. Baby Steps</string>
     <string name="level_2_image_button">2. Shoot Something</string>
+    <string name="level_3_image_button">3. Locks and Doors</string>
 
 </resources>

@@ -1079,8 +1079,9 @@ containing a value of this type.
         public static final int abc_textfield_searchview_right_holo_light=0x7f020056;
         public static final int ic_launcher=0x7f020057;
         public static final int level_one=0x7f020058;
-        public static final int level_two=0x7f020059;
-        public static final int llicon=0x7f02005a;
+        public static final int level_three=0x7f020059;
+        public static final int level_two=0x7f02005a;
+        public static final int llicon=0x7f02005b;
     }
     public static final class id {
         public static final int action_bar=0x7f06001c;
@@ -1284,6 +1285,7 @@ containing a value of this type.
         public static final int hello_world=0x7f0b000e;
         public static final int level_1_image_button=0x7f0b0022;
         public static final int level_2_image_button=0x7f0b0023;
+        public static final int level_3_image_button=0x7f0b0024;
         public static final int level_complete=0x7f0b0020;
         public static final int level_selector=0x7f0b0013;
         public static final int music_volume=0x7f0b001c;

@@ -38,8 +38,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:background="@drawable/level_two"
-            android:text="@string/level_2_image_button"
+            android:background="@drawable/level_three"
+            android:text="@string/level_3_image_button"
             android:textColor="#FF000000"
             android:textSize="35sp" />
 

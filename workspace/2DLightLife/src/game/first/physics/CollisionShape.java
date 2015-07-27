@@ -91,4 +91,8 @@ public abstract class CollisionShape {
 			vertices[i] = vertices[i].add(new FloatPoint(x, y));
 		}
 	}
+	
+	public void rotate(float degree) {
+		
+	}
 }

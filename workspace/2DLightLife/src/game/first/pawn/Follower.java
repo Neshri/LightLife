@@ -18,6 +18,14 @@ public class Follower implements Pawn {
 	private Pawn target;
 	private float speed;
 
+	/**
+	 * Creates a polygonal follower with a 0.08 radius
+	 * @param x
+	 * @param y
+	 * @param color
+	 * @param target
+	 * @param world
+	 */
 	public Follower(float x, float y, float[] color, Pawn target, World world) {
 		vPosition = new FloatPoint(x, y);
 		speed = 0;
@@ -48,28 +56,13 @@ public class Follower implements Pawn {
 		targetPos.normalize();
 		vDirection = targetPos.mult(speed);
 		BasicMovement.movePushSlide(model, world, vDirection);
-//		model.updateCollisionShapeList(world);
-//		targetPos = model.moveGetMTV(vDirection.getX(), vDirection.getY());
-//		if (targetPos != null) {
-//			targetPos = new FloatPoint(targetPos.getY(), -targetPos.getX());
-//			float mult = targetPos.dot(vDirection);
-//			targetPos = targetPos.mult(mult);
-//			if (model.move(targetPos.getX(), targetPos.getY())) {
-//				vDirection = targetPos;
-//			} else {
-//				return;
-//			}
-//		}
-		
-		// vPosition = vPosition.add(vDirection);
 		vPosition = new FloatPoint(model.position[0], model.position[1]);
 		lightAura.setPos(vPosition.getX(), vPosition.getY(), 2);
 	}
 
 	@Override
 	public FloatPoint getPosition() {
-		FloatPoint send = new FloatPoint(vPosition.getX(), vPosition.getY());
-		return send;
+		return new FloatPoint(vPosition.getX(), vPosition.getY());
 	}
 
 	@Override

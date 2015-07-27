@@ -338,7 +338,6 @@ public abstract class Shape {
 		}
 
 		float strength = pushMass / (collisionShape.mass + pushMass);
-		
 
 		FloatPoint result = new FloatPoint(x, y);
 		result = result.mult(strength);
@@ -361,12 +360,18 @@ public abstract class Shape {
 	}
 
 	/**
-	 * Not finished!
 	 * 
 	 * @param degree
+	 *            to rotate
+	 * @param x
+	 *            coordinate to rotate around
+	 * @param y
+	 *            coordinate to rotate around
 	 */
-	public void rotate(float degree) {
+	public void rotate(float degree, float x, float y) {
+		Matrix.translateM(modelMatrix, 0, x, y, 0);
 		Matrix.rotateM(modelMatrix, 0, degree, 0, 0, 1);
+		Matrix.translateM(modelMatrix, 0, -x, -y, 0);
 	}
 
 	public abstract String toString();
