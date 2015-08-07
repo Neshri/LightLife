@@ -20,6 +20,16 @@ public class CollisionBox extends CollisionShape {
 		super.axes = getAxes();
 		mass = (roughBounds[2] - roughBounds[0])
 				* (roughBounds[3] - roughBounds[1]);
+		
+		midPoint = new float[3];
+		midPoint[2] = z;
+		for (int i = 0; i < vertices.length; i++) {
+			midPoint[0] += vertices[i].getX();
+			midPoint[1] += vertices[i].getY();
+		}
+		midPoint[0] = midPoint[0] / vertices.length;
+		midPoint[1] = midPoint[1] / vertices.length;
+		
 	}
 
 	private FloatPoint[] getAxes() {

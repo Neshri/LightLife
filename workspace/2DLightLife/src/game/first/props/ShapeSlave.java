@@ -17,11 +17,6 @@ public class ShapeSlave extends Shape {
 		shape.getModelMatrix(modelMatrix);
 	}
 	
-	public void scale(float xScale, float yScale) {
-		Matrix.scaleM(modelMatrix, 0, xScale, yScale, 1);
-		position[0] = position[0] * xScale;
-		position[1] = position[1] * yScale;
-	}
 	
 	public void translate(float x, float y) {
 		Matrix.translateM(modelMatrix, 0, x, y, 0);

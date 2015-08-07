@@ -42,17 +42,20 @@ public class Rectangle extends Shape {
 	private float[] createVertices(float width, float height) {
 		float[] vertices = new float[12];
 		float[] pos = position;
-		for (int i = 0; i < 3; i++) {
-			vertices[i] = pos[i];
-		}
-		vertices[3] = pos[0] + width;
-		vertices[4] = pos[1];
+		vertices[0] = pos[0] - width / 2;
+		vertices[1] = pos[1] - height / 2;
+		vertices[2] = pos[2];
+
+		vertices[3] = pos[0] + width / 2;
+		vertices[4] = pos[1] - height / 2;
 		vertices[5] = pos[2];
-		vertices[6] = pos[0] + width;
-		vertices[7] = pos[1] + height;
+
+		vertices[6] = pos[0] + width / 2;
+		vertices[7] = pos[1] + height / 2;
 		vertices[8] = pos[2];
-		vertices[9] = pos[0];
-		vertices[10] = vertices[7];
+
+		vertices[9] = pos[0] - width / 2;
+		vertices[10] = pos[1] + height / 2;
 		vertices[11] = pos[2];
 
 		return vertices;

@@ -20,6 +20,8 @@ public class LevelsMenu implements CustomView {
 		installButton(R.id.levelButton1, "FirstLevel");
 		installButton(R.id.levelButton2, "SecondLevel");
 		installButton(R.id.levelButton3, "ThirdLevel");
+		installButton(R.id.levelButton4, "FourthLevel");
+		
 	}
 
 	private void installButton(int id, String level) {

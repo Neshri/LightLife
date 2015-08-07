@@ -92,6 +92,9 @@ public class World extends Observable {
 		send = (LinkedList<Shape>) staticNearList.retrieve(send, bounds);
 		int count = nbrDynamic;
 		for (int i = 1; i <= count; i++) {
+			if (i == dynamicObjects.length) {
+				break;
+			}
 			if (dynamicObjects[i] != null) {
 				send.add(dynamicObjects[i]);
 			} else {
@@ -122,7 +125,7 @@ public class World extends Observable {
 		if (shape.getRoughBounds() != null) {
 			staticNearList.insert(shape);
 		}
-		orderOfDraw.add(shape.id, (int) shape.position[2], 'S');
+		orderOfDraw.add(shape.id, Math.round(shape.position[2]), 'S');
 		nbrObjects++;
 		nbrStatic++;
 		notifyObs(STATIC_SHAPES);
@@ -142,7 +145,7 @@ public class World extends Observable {
 		if (staticObjects[id].getRoughBounds() != null) {
 			staticNearList.delete(staticObjects[id]);
 		}
-		orderOfDraw.delete(id, (int) staticObjects[id].position[2], 'S');
+		orderOfDraw.delete(id, Math.round(staticObjects[id].position[2]), 'S');
 		staticObjects[id] = null;
 		staticFree.storeId(id);
 		nbrObjects--;
@@ -165,7 +168,7 @@ public class World extends Observable {
 		shape.id = dynamicFree.getFreeId();
 		shape.type = 'D';
 		dynamicObjects[shape.id] = shape;
-		orderOfDraw.add(shape.id, (int) shape.position[2], 'D');
+		orderOfDraw.add(shape.id, Math.round(shape.position[2]), 'D');
 		nbrObjects++;
 		nbrDynamic++;
 		notifyObs(DYNAMIC_SHAPES);
@@ -179,7 +182,7 @@ public class World extends Observable {
 		if (id >= dynamicObjects.length || dynamicObjects[id] == null || id < 1) {
 			return;
 		}
-		orderOfDraw.delete(id, (int) dynamicObjects[id].position[2], 'D');
+		orderOfDraw.delete(id, Math.round(dynamicObjects[id].position[2]), 'D');
 		dynamicObjects[id] = null;
 		dynamicFree.storeId(id);
 		nbrObjects--;
@@ -253,11 +256,12 @@ public class World extends Observable {
 		 * @return FreeID
 		 */
 		public int getFreeId() {
-			if (nextCell == size) {
+			if (nextCell == size - 1) {
 				int[] newFree = new int[size * INCREASE_MULTIPLIER];
 				for (int i = size; i < size * INCREASE_MULTIPLIER; i++) {
 					newFree[i] = i;
 				}
+				freeList = newFree;
 				if (type == STATIC_TYPE) {
 					world.increaseStatic();
 				} else {

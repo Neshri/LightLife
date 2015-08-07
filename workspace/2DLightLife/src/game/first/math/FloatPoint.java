@@ -18,6 +18,10 @@ public class FloatPoint {
 		return y;
 	}
 
+	public FloatPoint translate(float x, float y) {
+		return new FloatPoint(this.x + x, this.y + y);
+	}
+
 	public float distance(FloatPoint other) {
 		if (other == null) {
 			return -1;

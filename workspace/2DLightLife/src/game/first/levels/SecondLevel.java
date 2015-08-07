@@ -30,9 +30,9 @@ public class SecondLevel extends Level {
 			world.createStatic(i);
 		}
 		Player player = new Player(2, 0, white, world, this);
-		Follower follow = new Follower(-1.2f, 0, green, player, world);
+		Follower follow = new Follower(-1, 0, green, player, world);
 		objective = new GetToPawn(follow, player, 0.3f);
-		box = createDestroyableBox(1, 1, -1.7f, -0.5f, 0.4f, darkBlue);
+		box = createDestroyableBox(1, 1, -1, 0, 0.4f, darkBlue);
 		for (Shape i : box) {
 			world.createStatic(i);
 		}

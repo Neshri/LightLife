@@ -1,12 +1,14 @@
 package game.first.physics;
 
 import game.first.math.FloatPoint;
+import game.first.math.TwoDRotMatrix;
 
 public abstract class CollisionShape {
 	public float mass;
 	public float[] roughBounds;
 	public FloatPoint[] axes;
 	public FloatPoint[] vertices;
+	public float[] midPoint;
 	public int z;
 	private FloatPoint lastTestedShortAxis;
 
@@ -15,7 +17,8 @@ public abstract class CollisionShape {
 	}
 
 	public boolean overlaps(CollisionShape shape) {
-		if (shape == null || axes == null || shape.axes == null || shape == this) {
+		if (shape == null || axes == null || shape.axes == null
+				|| shape == this) {
 			return false;
 		}
 		if (shape.z != z) {
@@ -90,9 +93,33 @@ public abstract class CollisionShape {
 		for (int i = 2; i < vertices.length; i++) {
 			vertices[i] = vertices[i].add(new FloatPoint(x, y));
 		}
+		midPoint[0] += x;
+		midPoint[1] += y;
 	}
-	
+
 	public void rotate(float degree) {
-		
+		FloatPoint temp;
+		TwoDRotMatrix rot = new TwoDRotMatrix(degree);
+		for (int i = 0; i < vertices.length; i++) {
+			temp = vertices[i];
+			temp = temp.translate(-midPoint[0], -midPoint[1]);
+			temp = rot.rotate(temp);
+			temp = temp.translate(midPoint[0], midPoint[1]);
+			vertices[i] = temp;
+			if (vertices[i].getX() < roughBounds[0]) {
+				roughBounds[0] = vertices[i].getX();
+			} else if (vertices[i].getX() > roughBounds[2]) {
+				roughBounds[2] = vertices[i].getX();
+			}
+			if (vertices[i].getY() < roughBounds[1]) {
+				roughBounds[1] = vertices[i].getY();
+			} else if (vertices[i].getY() > roughBounds[3]) {
+				roughBounds[3] = vertices[i].getY();
+			}
+		}
+		for (int i = 0; i < axes.length; i++) {
+			axes[i] = rot.rotate(axes[i]);
+		}
+
 	}
 }

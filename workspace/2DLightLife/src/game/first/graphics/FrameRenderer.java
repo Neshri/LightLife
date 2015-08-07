@@ -65,15 +65,11 @@ public class FrameRenderer extends GLRenderer implements Observer {
 		}
 		while (iter.hasNext()) {
 			shape = iter.next();
-//			String[] shaders = shape.getShaders();
-//			shape.installGraphics(shaders[0], shaders[1]);
 			shape.giveShaderProgram(standardShaderProgram);
 		}
 		iter = dynamicShapes.iterator();
 		while (iter.hasNext()) {
 			shape = iter.next();
-//			String[] shaders = shape.getShaders();
-//			shape.installGraphics(shaders[0], shaders[1]);
 			shape.giveShaderProgram(standardShaderProgram);
 		}
 	}
@@ -137,8 +133,6 @@ public class FrameRenderer extends GLRenderer implements Observer {
 		Iterator<Shape> iter = staticShapes.iterator();
 		while (iter.hasNext()) {
 			Shape shape = iter.next();
-//			String[] shaders = shape.getShaders();
-//			shape.installGraphics(shaders[0], shaders[1]);
 			shape.giveShaderProgram(standardShaderProgram);
 		}
 	}
@@ -147,8 +141,6 @@ public class FrameRenderer extends GLRenderer implements Observer {
 		Iterator<Shape> iter = dynamicShapes.iterator();
 		while (iter.hasNext()) {
 			Shape shape = iter.next();
-//			String[] shaders = shape.getShaders();
-//			shape.installGraphics(shaders[0], shaders[1]);
 			shape.giveShaderProgram(standardShaderProgram);
 		}
 	}

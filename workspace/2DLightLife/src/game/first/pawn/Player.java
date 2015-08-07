@@ -76,25 +76,6 @@ public class Player extends Observable implements Pawn {
 			vDirection[1] = maxCalc.getY();
 		}
 		lightBreath.update();
-		// playerModel.updateCollisionShapeList(world);
-		// FloatPoint normalVector = playerModel.moveGetMTV(vDirection[0],
-		// vDirection[1]);
-		// if (normalVector != null) {
-		// FloatPoint slide = new FloatPoint(normalVector.getY(),
-		// -normalVector.getX());
-		// float multiplier = slide.dot(new FloatPoint(vDirection[0],
-		// vDirection[1]));
-		// slide = slide.mult(multiplier);
-		//
-		// vDirection[0] = slide.getX();
-		// vDirection[1] = slide.getY();
-		// if (!playerModel.move(vDirection[0], vDirection[1])) {
-		// vDirection[0] = 0;
-		// vDirection[1] = 0;
-		// return;
-		// }
-		//
-		// }
 		FloatPoint moved = BasicMovement.movePushSlide(playerModel, world,
 				new FloatPoint(vDirection[0], vDirection[1]));
 		vDirection[0] = moved.getX();
@@ -102,8 +83,6 @@ public class Player extends Observable implements Pawn {
 
 		vPosition[0] = playerModel.position[0];
 		vPosition[1] = playerModel.position[1];
-		// vPosition[0] += vDirection[0];
-		// vPosition[1] += vDirection[1];
 
 		vDirection[0] = vDirection[0] / SLOWDOWNSPEED;
 		vDirection[1] = vDirection[1] / SLOWDOWNSPEED;
@@ -133,21 +112,6 @@ public class Player extends Observable implements Pawn {
 		return send;
 	}
 
-	// Not tested yet
-	public void setPosition(float x, float y) {
-		float goX = x - vPosition[0];
-		float goY = y - vPosition[1];
-		playerModel.updateCollisionShapeList(world);
-		if (!playerModel.move(goX, goY)) {
-			return;
-		}
-		vPosition[0] = x;
-		vPosition[1] = y;
-		lightAura.setPos(vPosition[0], vPosition[1], 2f);
-		setChanged();
-		notifyObservers();
-	}
-
 	public Controller getController() {
 		return control;
 	}
@@ -156,10 +120,12 @@ public class Player extends Observable implements Pawn {
 		return world;
 	}
 
+	/**
+	 * Not supported
+	 */
 	@Override
 	public void step(World world) {
 		// does nothing
-
 	}
 
 	@Override

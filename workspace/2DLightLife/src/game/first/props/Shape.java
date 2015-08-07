@@ -80,7 +80,7 @@ public abstract class Shape {
 	private FloatPoint directionVector;
 	private boolean pushable = true;
 
-	public float[] position = new float[3];
+	public float[] position = new float[4];
 	public CollisionShape collisionShape;
 	private List<Shape> nearShapes;
 	public Shape lastCollision;
@@ -90,6 +90,7 @@ public abstract class Shape {
 		position[0] = x;
 		position[1] = y;
 		position[2] = z;
+		position[3] = 1;
 		this.destructible = destructible;
 		for (int i = 0; i < 4; i++) {
 			this.color[i] = color[i];
@@ -187,8 +188,9 @@ public abstract class Shape {
 		mMVPMatrixHandle = GLES20.glGetUniformLocation(shaderProgram,
 				"u_MVPMatrix");
 		float[] mvpMatrix = new float[16];
-		Matrix.multiplyMM(mvpMatrix, 0, pMatrix, 0, vMatrix, 0);
-		Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix, 0, mMatrix, 0);
+		float[] pvMatrix = new float[16];
+		Matrix.multiplyMM(pvMatrix, 0, pMatrix, 0, vMatrix, 0);
+		Matrix.multiplyMM(mvpMatrix, 0, pvMatrix, 0, mMatrix, 0);
 		// Apply the projection and view transformation
 		GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
 		// Log.d("Graphics", "first" + lights.size());
@@ -271,7 +273,8 @@ public abstract class Shape {
 	 */
 	public FloatPoint moveGetMTV(float x, float y) {
 		FloatPoint send = null;
-		if (collisionShape == null) {
+		if (collisionShape == null || nearShapes == null
+				|| nearShapes.isEmpty()) {
 			moveWithoutCollision(x, y);
 			return send;
 		}
@@ -295,7 +298,8 @@ public abstract class Shape {
 	}
 
 	public boolean move(float x, float y) {
-		if (collisionShape == null) {
+		if (collisionShape == null || nearShapes == null
+				|| nearShapes.isEmpty()) {
 			moveWithoutCollision(x, y);
 			return true;
 		}
@@ -369,9 +373,53 @@ public abstract class Shape {
 	 *            coordinate to rotate around
 	 */
 	public void rotate(float degree, float x, float y) {
-		Matrix.translateM(modelMatrix, 0, x, y, 0);
-		Matrix.rotateM(modelMatrix, 0, degree, 0, 0, 1);
-		Matrix.translateM(modelMatrix, 0, -x, -y, 0);
+		float[] rot = new float[16];
+		Matrix.setIdentityM(rot, 0);
+		Matrix.translateM(rot, 0, x, y, position[2]);
+		Matrix.rotateM(rot, 0, degree, 0, 0, 1);
+		Matrix.translateM(rot, 0, -x, -y, -position[2]);
+		float[] temp = new float[16];
+		Matrix.multiplyMM(temp, 0, modelMatrix, 0, rot, 0);
+		for (int i = 0; i < 16; i++) {
+			modelMatrix[i] = temp[i];
+		}
+
+		Matrix.multiplyMV(temp, 0, rot, 0, position, 0);
+		if (collisionShape != null) {
+			collisionShape.move(temp[0] - position[0], temp[1] - position[1]);
+			collisionShape.rotate(degree);
+		}
+		for (int i = 0; i < 3; i++) {
+			position[i] = temp[i];
+		}
+	}
+
+	/**
+	 * Not compatible with collision at the moment
+	 * 
+	 * @param xScale
+	 * @param yScale
+	 * @param zScale
+	 */
+	public void scale(float xScale, float yScale, float x, float y) {
+		if (position[0] == 0 && position[1] == 0) {
+			Matrix.scaleM(modelMatrix, 0, xScale, yScale, 1);
+			position[0] = position[0] * xScale;
+			position[1] = position[1] * yScale;
+
+		} else {
+			Matrix.translateM(modelMatrix, 0, x, y, 0);
+			Matrix.scaleM(modelMatrix, 0, xScale, yScale, 1);
+			Matrix.translateM(modelMatrix, 0, -x, -y, 0);
+			position[0] = position[0] - (position[0] - x) * xScale;
+			position[1] = position[1] - (position[1] - y) * yScale;
+		}
+
+	}
+
+	public void translateZ(float z) {
+		Matrix.translateM(modelMatrix, 0, 0, 0, z);
+		position[2] += z;
 	}
 
 	public abstract String toString();

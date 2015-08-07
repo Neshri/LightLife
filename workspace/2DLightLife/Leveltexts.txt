@@ -5,6 +5,11 @@ This seemed familiar but something was different, a new force on her right side 
 present and it made the emitting of more light possible. Was this newfound \"power\" 
 somehow affecting the environment?
  
-The green little polygons seemed like they were drawn to Snow, and she to them, and whenever 
-she was close to them she felt at ease. She wanted to touch them but every time she tried 
-everything went black and once again she would be lost.
+"The green little polygons seemed like they were drawn to Snow, "
++ "and she to them, and whenever she was close to them she felt at ease."
++ " She felt the strange urge to touch them but every time she tried everything went black,"
++ " once again she would be lost and this time there seemed to be an obstacle in the way."
+
+"Again, so familiar but still different. " +
+"Snow knew not to take her surroundings\' behavior for granted, " +
+"if it looked different it could also behave differently."

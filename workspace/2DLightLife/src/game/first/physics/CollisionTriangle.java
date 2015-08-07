@@ -35,6 +35,15 @@ public class CollisionTriangle extends CollisionShape {
 		float midX = (vertices[0].getX() + vertices[1].getX()) / 2;
 		float midY = (vertices[0].getY() + vertices[1].getY()) / 2;
 		mass = mass * vertices[2].distance(new FloatPoint(midX, midY));
+		
+		midPoint = new float[3];
+		midPoint[2] = z;
+		for (int i = 0; i < vertices.length; i++) {
+			midPoint[0] += vertices[i].getX();
+			midPoint[1] += vertices[i].getY();
+		}
+		midPoint[0] = midPoint[0] / vertices.length;
+		midPoint[1] = midPoint[1] / vertices.length;
 	}
 
 	private FloatPoint[] getAxes() {
