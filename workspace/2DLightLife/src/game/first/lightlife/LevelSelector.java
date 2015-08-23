@@ -1,5 +1,6 @@
 package game.first.lightlife;
 
+import game.first.levels.FifthLevel;
 import game.first.levels.FirstLevel;
 import game.first.levels.FourthLevel;
 import game.first.levels.Level;
@@ -27,6 +28,7 @@ public class LevelSelector {
 		addLevel("SecondLevel", new SecondLevel());
 		addLevel("ThirdLevel", new ThirdLevel());
 		addLevel("FourthLevel", new FourthLevel());
+		addLevel("FifthLevel", new FifthLevel());
 
 	}
 

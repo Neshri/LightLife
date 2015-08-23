@@ -32,7 +32,7 @@ public class FourthLevel extends Level {
 		for (Shape i : box) {
 			world.createStatic(i);
 		}
-		Player player = new Player(-1.5f, 0, white, world, this);
+		Player player = new Player(-1.2f, -1f, white, world, this);
 		Follower follow = new Follower(2, 2, green, player, world);
 		objective = new GetToPawn(follow, player, 0.3f);
 		box = createDestroyableBox(0.5f, 0.5f, 2, 2, 0.2f, blue);
@@ -47,7 +47,7 @@ public class FourthLevel extends Level {
 				1.305f, 0.45f), new FloatPoint(1.305f, -1f), 2, blue, true,
 				true);
 
-		new LinkedMove(controller, subject, world, new FloatPoint(0, 1),
+		new LinkedMove(controller, subject, world, 1.7f, new FloatPoint(0, 1),
 				new FloatPoint(-0.5f, 0), lock, new FloatPoint(0, -0.01f));
 
 		// locking mechanism
@@ -63,7 +63,7 @@ public class FourthLevel extends Level {
 				true, false));
 		world.createStatic(new Rectangle(2.55f, 1.05f, black, -1.25f, -2.25f,
 				2, true, false));
-		world.createStatic(new Rectangle(0.5f, 5f, black, -2.26f, 0, 2, true,
+		world.createStatic(new Rectangle(0.9f, 5f, black, -2.06f, 0, 2, true,
 				false));
 
 		world.createStatic(new PythagorasTree(0.55f, -2.55f, 2, darkGreenRed,

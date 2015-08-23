@@ -44,7 +44,7 @@ public class ThirdLevel extends Level {
 		Shape controller = new Rectangle(0.5f, 0.5f, darkGreen, -1.2f, 0, 2,
 				true, false);
 		Shape subject = new Rectangle(0.5f, 1f, red, 0.555f, 0, 2, true, false);
-		new LinkedMove(controller, subject, world, new FloatPoint(0, 1),
+		new LinkedMove(controller, subject, world, 1, new FloatPoint(0, 1),
 				new FloatPoint(-1.2f, 0), null, null);
 
 		// locking mechanism

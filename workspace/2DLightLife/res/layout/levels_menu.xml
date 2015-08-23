@@ -53,6 +53,17 @@
             android:text="@string/level_4_image_button"
             android:textColor="#FF000000"
             android:textSize="35sp" />
+         
+          <Button
+            android:id="@+id/levelButton5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/level_four"
+            android:text="@string/level_4_image_button"
+            android:textColor="#FF000000"
+            android:textSize="35sp" />
 
     </LinearLayout>
 

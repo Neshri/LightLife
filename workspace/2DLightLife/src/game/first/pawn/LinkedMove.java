@@ -8,18 +8,20 @@ public class LinkedMove implements Pawn {
 
 	private Shape controller, subject, lock;
 	private FloatPoint subjectDirection, controllerPoint, sUnlockedDirection;
-	private float length;
+	private float length, multiplier;
 	private boolean lockEnabled;
 
 	public LinkedMove(Shape controller, Shape subject, World world,
-			FloatPoint subjectDirection, FloatPoint controllerPoint,
-			Shape lock, FloatPoint sUnlockedDirection) {
+			float multiplier, FloatPoint subjectDirection,
+			FloatPoint controllerPoint, Shape lock,
+			FloatPoint sUnlockedDirection) {
 		if (lock != null) {
 			lockEnabled = true;
 			this.lock = lock;
 			world.createStatic(lock);
 			this.sUnlockedDirection = sUnlockedDirection;
 		}
+		this.multiplier = multiplier;
 		this.controller = controller;
 		this.subject = subject;
 		subject.setPushable(false);
@@ -35,8 +37,8 @@ public class LinkedMove implements Pawn {
 	public void step(World world) {
 		float dist = controllerPoint.distance(new FloatPoint(
 				controller.position[0], controller.position[1]));
-		BasicMovement
-				.move(subject, world, subjectDirection.mult(dist - length));
+		BasicMovement.move(subject, world,
+				subjectDirection.mult((dist - length) * multiplier));
 		if (dist > 0.001f) {
 			FloatPoint moveDir = controllerPoint.sub(new FloatPoint(
 					controller.position[0], controller.position[1]));
@@ -46,7 +48,7 @@ public class LinkedMove implements Pawn {
 		}
 
 		length = dist;
-		
+
 		if (lockEnabled) {
 			if (lock.getAlpha() == 0) {
 				BasicMovement.move(subject, world, sUnlockedDirection);
