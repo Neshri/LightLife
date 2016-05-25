@@ -208,7 +208,7 @@ public abstract class Shape {
 			pointLightData[i * 8] = data[0];
 			pointLightData[i * 8 + 1] = data[1];
 			pointLightData[i * 8 + 2] = data[2];
-			pointLightData[i * 8 + 3] = temp.getStrength();
+			pointLightData[i * 8 + 3] = temp.getStrength() * World.LIGHT_STRENGTH_MULTIPLIER;
 			data = temp.getColor();
 			pointLightData[i * 8 + 4] = data[0];
 			pointLightData[i * 8 + 5] = data[1];
@@ -267,7 +267,6 @@ public abstract class Shape {
 	 * 
 	 * @param x
 	 * @param y
-	 * @param world
 	 * @return If null, move was successful
 	 */
 	public FloatPoint moveGetMTV(float x, float y) {
@@ -398,7 +397,6 @@ public abstract class Shape {
 	 * 
 	 * @param xScale
 	 * @param yScale
-	 * @param zScale
 	 */
 	public void scale(float xScale, float yScale, float x, float y) {
 		if (position[0] == 0 && position[1] == 0) {

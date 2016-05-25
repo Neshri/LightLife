@@ -2,12 +2,15 @@ package gui;
 
 import game.first.lightlife.PlayActivity;
 import game.first.lightlife.R;
+
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+@SuppressLint("ValidFragment")
 public class LevelEndedDialog extends DialogFragment {
 
 	private PlayActivity act;

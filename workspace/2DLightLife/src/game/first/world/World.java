@@ -21,6 +21,8 @@ public class World extends Observable {
 	public final static int STATIC_SHAPES = 3;
 	public final static int MAX_POINT_LIGHTS = 10;
 
+	public static float LIGHT_STRENGTH_MULTIPLIER = 1;
+
 	private static final int INCREASE_MULTIPLIER = 2;
 	private Shape[] staticObjects, dynamicObjects;
 	private PointNearList staticNearList;

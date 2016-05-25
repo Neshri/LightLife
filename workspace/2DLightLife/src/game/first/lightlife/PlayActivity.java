@@ -1,8 +1,10 @@
 package game.first.lightlife;
 
+import game.first.mechanics.LevelFadeIn;
 import game.first.pawn.Player;
+import game.first.world.World;
 import gui.CustomView;
-import gui.LevelEndedDialog;
+import gui.LevelSuccess;
 import gui.LevelsMenu;
 import gui.MainMenu;
 import gui.OptionsMenu;
@@ -16,6 +18,10 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,6 +45,7 @@ public class PlayActivity extends Activity {
 	private OnClickListener backButtonAction;
 	private CustomView currentView;
 	private TextView textPrompt;
+	private Handler mHandler;
 
 	/**
 	 * Called when the activity is starting
@@ -51,11 +58,40 @@ public class PlayActivity extends Activity {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		installHandler();
 		levels = new LevelSelector();
 		musicPlayer = new MusicPlayer(this, levels.getLevelSong());
 		soundPlayer = new SoundPlayer(this);
 		askSound();
 
+	}
+
+	public void assignTask(ActivityTasks task) {
+		Message message = mHandler.obtainMessage();
+		message.obj = task;
+		message.sendToTarget();
+	}
+
+	private void installHandler() {
+		mHandler = new Handler(Looper.getMainLooper()) {
+			public void handleMessage(Message message) {
+				if (message.obj instanceof ActivityTasks) {
+					ActivityTasks task = (ActivityTasks) message.obj;
+					switch (task) {
+						case OBJECTIVE_SUCCESS:
+							objectiveSuccess();
+							break;
+						case START_NEXT_LEVEL:
+                            if (currentView instanceof PlayView) {
+                                PlayView pv = (PlayView) currentView;
+                                pv.pause();
+                            }
+							startNextLevel();
+							break;
+					}
+				}
+			}
+		};
 	}
 
 	/**
@@ -209,10 +245,18 @@ public class PlayActivity extends Activity {
 	}
 
 	public void objectiveSuccess() {
-		LevelEndedDialog end = new LevelEndedDialog(this);
-		end.show(getFragmentManager(), "End");
+		if (currentView instanceof PlayView) {
+			LevelSuccess success = new LevelSuccess(this);
+			new Thread(success).start();
+			//PlayView pv = (PlayView) currentView;
+			//pv.pause();
+			//success.fadeInNext();
+		}
 	}
 
+	/**
+	 * Starts the requested level if it exists
+	 */
 	public void startLevel(String level) {
 		display = getWindowManager().getDefaultDisplay();
 		size = new Point();
@@ -297,6 +341,7 @@ public class PlayActivity extends Activity {
 	}
 
 	private void setPlayView() {
+        Log.d("Start", "Defining play view");
 		backButtonAction = new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -307,12 +352,16 @@ public class PlayActivity extends Activity {
 		if (withMusic) {
 			musicPlayer.playSong(levels.getLevelSong(), 0);
 		}
+        World.LIGHT_STRENGTH_MULTIPLIER = 0;
+        new Thread(new LevelFadeIn()).start();
 		currentView.setAsView();
-		setPromptText(player.getLevel().getStartText());
+		//setPromptText(player.getLevel().getStartText());
 	}
 
 	public void destroyPrompt() {
-		((ViewGroup) textPrompt.getParent()).removeView(textPrompt);
+        if (textPrompt != null) {
+            ((ViewGroup) textPrompt.getParent()).removeView(textPrompt);
+        }
 	}
 
 	public void setPromptText(String str) {

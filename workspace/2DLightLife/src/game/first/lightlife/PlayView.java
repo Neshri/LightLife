@@ -7,6 +7,9 @@ import util.ErrorHandler;
 import android.annotation.SuppressLint;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
@@ -27,10 +30,6 @@ public class PlayView extends GLSurfaceView implements ErrorHandler, CustomView 
 		
 		
 	}
-
-//	public PlayView(PlayActivity context, AttributeSet attrs) {
-//		super(context, attrs);
-//	}
 
 	@Override
 	public void handleError(final ErrorType errorType, final String cause) {
@@ -65,9 +64,9 @@ public class PlayView extends GLSurfaceView implements ErrorHandler, CustomView 
 		}
 		if (event != null) {
 			
-			int eventaction = event.getAction();
+			int eventAction = event.getAction();
 
-		    switch (eventaction) {
+		    switch (eventAction) {
 		        case MotionEvent.ACTION_DOWN: 
 		        	calculatePointers(event);
 		            break;
@@ -137,9 +136,9 @@ public class PlayView extends GLSurfaceView implements ErrorHandler, CustomView 
 
 	
 	public void objectiveSuccess() {
-		pause();
-		act.objectiveSuccess();
+		act.assignTask(ActivityTasks.OBJECTIVE_SUCCESS);
 	}
+
 
 	// Hides superclass method.
 	public void setRenderer(FrameRenderer renderer, float density) {

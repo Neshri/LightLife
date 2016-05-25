@@ -10,6 +10,7 @@ public class GameLoop extends Thread {
 	private volatile boolean shouldPause;
 	private volatile Object lock = new Object();
 	private PlayView view;
+	private boolean steeringOff;
 	private World world;
 	private Controller control;
 	private float[] controlVals;
@@ -42,21 +43,24 @@ public class GameLoop extends Thread {
 		while(true) {
 			sleepTime = System.currentTimeMillis();
 			world.step();
-			controlVals = view.controlVals;
-			control.update(controlVals[0], controlVals[1], controlVals[2], controlVals[3]);
-			if (objective != null && objective.isCompleted()) {				
+			if (!steeringOff) {
+				controlVals = view.controlVals;
+				control.update(controlVals[0], controlVals[1], controlVals[2], controlVals[3]);
+			}
+			if (objective != null && objective.isCompleted()) {
+				steeringOff = true;
+				control.update(0,0,0,0);
 				view.objectiveSuccess();
+				objective = null;
 			}
 			sleepTime = 10 - (System.currentTimeMillis() - sleepTime);
-			if (sleepTime < 0) {
-				sleepTime = 0;
+			if (sleepTime > 0) {
+				try {
+					sleep(sleepTime);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-			try {
-				sleep(sleepTime);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
 			if (shouldPause) {
 				synchronized (lock) {
 					try {

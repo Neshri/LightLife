@@ -89,7 +89,7 @@ public class Bullet implements Pawn {
 				createdTime = System.currentTimeMillis();
 				light.setStrength(light.getStrength() + 0.1f);
 				rect.translateZ(-0.55f);
-				new Splitter(rect, world, SIZE, 2);
+				new Splitter(rect, world, SIZE, 1);
 				world.destroyDynamic(rect.id);
 				if (!test.isDestructible()) {
 					return;

@@ -2,16 +2,20 @@ package gui;
 
 import game.first.lightlife.PlayActivity;
 import game.first.lightlife.R;
+
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+@SuppressLint("ValidFragment")
 public class PauseMenuDialog extends DialogFragment{
 
 	private PlayActivity activity;
-	
+
+
 	public PauseMenuDialog(PlayActivity activity) {
 		activity.pauseCurrent();
 		this.activity = activity;

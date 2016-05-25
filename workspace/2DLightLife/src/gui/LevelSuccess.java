@@ -1,41 +1,46 @@
 package gui;
 
+import android.os.Message;
+import android.util.Log;
+
 import java.util.List;
 
 import game.first.lighting.PointLight;
+import game.first.lightlife.ActivityTasks;
 import game.first.lightlife.PlayActivity;
+import game.first.world.World;
 
 /**
  * Created by Anton Lundgren on 2015-11-30.
  */
-public class LevelSuccess {
+public class LevelSuccess implements Runnable{
 
     private PlayActivity act;
-    private List<PointLight> lights;
 
-    public LevelSuccess(PlayActivity act, List<PointLight> lights) {
+    public LevelSuccess(PlayActivity act) {
         this.act = act;
-        this.lights = lights;
     }
 
-    public void fadeOutCurrent() {
-        float mult = 0.99f;
-        while (mult > 0) {
-            for (PointLight a : lights) {
-                float tmp = a.getStrength();
-                a.setStrength(tmp * mult);
-            }
-            mult -= 0.01f;
+    private void fadeOutCurrent() {
+        while (World.LIGHT_STRENGTH_MULTIPLIER - 0.015f > 0) {
+            World.LIGHT_STRENGTH_MULTIPLIER -= 0.015f;
             try {
-                Thread.sleep(40);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
+        World.LIGHT_STRENGTH_MULTIPLIER = 0;
     }
 
-    public void fadeInNext() {
-        act.startNextLevel();
+    private void fadeInNext() {
+        act.assignTask(ActivityTasks.START_NEXT_LEVEL);
+    }
+
+
+    @Override
+    public void run() {
+        fadeOutCurrent();
+        fadeInNext();
     }
 }

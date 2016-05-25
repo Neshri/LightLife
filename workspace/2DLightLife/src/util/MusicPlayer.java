@@ -1,7 +1,9 @@
 package util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.media.MediaPlayer;
+import android.util.Log;
 
 public class MusicPlayer extends CustomMediaPlayer {
 
@@ -29,37 +31,42 @@ public class MusicPlayer extends CustomMediaPlayer {
 	}
 
 	public void playSong(int song, int songPos) {
-		if (currentlyPlayingSong != song) {
-			if (player != null) {
-				stop(player);
-			}
-			player = MediaPlayer.create(cont, song);
-			player.setOnErrorListener(new MediaError());
-			if (player == null) {
-				return;
-			}
-			this.songPos = songPos;
-			start(player);
-			currentlyPlayingSong = song;
-		} else {
-			if (player == null) {
+		try {
+			if (currentlyPlayingSong != song) {
+				if (player != null) {
+					stop(player);
+				}
 				player = MediaPlayer.create(cont, song);
 				player.setOnErrorListener(new MediaError());
-				start(player);
-				return;
-			}
-			try {
-				if (player.isPlaying()) {
+				if (player == null) {
 					return;
 				}
-			} catch (IllegalStateException e) {
-				player = MediaPlayer.create(cont, song);
-				player.setOnErrorListener(new MediaError());
-				player.setVolume(volume, volume);
-				player.setLooping(true);
-				player.start();
+				this.songPos = songPos;
+				start(player);
+				currentlyPlayingSong = song;
+			} else {
+				if (player == null) {
+					player = MediaPlayer.create(cont, song);
+					player.setOnErrorListener(new MediaError());
+					start(player);
+					return;
+				}
+				try {
+					if (player.isPlaying()) {
+						return;
+					}
+				} catch (IllegalStateException e) {
+					player = MediaPlayer.create(cont, song);
+					player.setOnErrorListener(new MediaError());
+					player.setVolume(volume, volume);
+					player.setLooping(true);
+					player.start();
+				}
 			}
+		} catch (Resources.NotFoundException e) {
+			Log.d("Music", "Song not found");
 		}
+
 	}
 
 	private void stop(MediaPlayer mp) {
